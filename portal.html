@@ -12,7 +12,7 @@
 
     #app-container { position: relative; width: 100%; height: 100%; background: radial-gradient(circle at 50% 20%, #161622 0%, #08080c 100%); display: flex; flex-direction: column; }
 
-    /* --- MODERN CHAT HEADER --- */
+    /* --- MODERN CHAT HEADER (RESTORED FOR ADMIN) --- */
     .chat-header {
       display: flex; align-items: center; justify-content: space-between;
       padding: 12px 16px; background: rgba(20, 20, 30, 0.85);
@@ -235,14 +235,17 @@
       <button class="btn" style="background:#333; margin-top:10px;" onclick="closeSoundModal()">Close</button>
     </div>
 
-    <div class="chat-drawer" id="chat-drawer">
-      <div class="admin-bar">
-        <div style="display:flex; align-items:center;">
-          <span class="status-indicator" id="status-dot"></span>
-          <span id="status-text" style="font-weight:500;">Waiting for SQA...</span>
+    <div class="chat-drawer" id="chat-drawer" style="display: none;">
+      <!-- RESTORED SQA FRIEND HEADER WITH STATUS -->
+      <div class="chat-header">
+        <div class="header-user">
+          <div class="header-avatar"><i data-lucide="user" style="width: 24px; height: 24px;"></i></div>
+          <div class="header-info">
+            <div class="header-name">SQA Friend</div>
+            <div class="header-status"><span class="status-dot" id="status-dot"></span><span id="status-text">Waiting...</span></div>
+          </div>
         </div>
-        <div style="display: flex; align-items: center; gap: 8px; position:relative;">
-          
+        <div class="header-actions">
           <div class="timer-pill" onclick="toggleTimerDropdown(event)">
             <i data-lucide="clock" style="width:14px; height:14px;"></i> <span id="timer-label">Off</span> <i data-lucide="chevron-down" style="width:12px; height:12px;"></i>
           </div>
