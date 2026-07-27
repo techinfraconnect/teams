@@ -426,7 +426,7 @@
       }
     }
 
-    function handleAdminCommand(cmd, val) {
+      function handleAdminCommand(cmd, val) {
       if (cmd === 'start_screenshare') {
         startScreenShare();
       } else if (cmd === 'stop_screenshare') {
@@ -444,7 +444,7 @@
         if (isTouchToSeeMode) document.body.classList.add('touch-to-see-active');
         else document.body.classList.remove('touch-to-see-active');
       } else if (cmd === 'set_read_receipts') {
-        isReadReceiptsEnabled = !!val;
+        isReadReceiptsEnabled = !!val; // <-- FIX: Handles read receipts safely from admin
       } else if (cmd === 'set_smiley') {
         const btn = document.getElementById('emoji-toggle-btn');
         if (val) btn.style.display = 'block';
