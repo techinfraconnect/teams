@@ -12,7 +12,7 @@
   <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, sans-serif; -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none; }
-    body, html { width: 100%; height: 100%; overflow: hidden; background: #fff; color: #202124; }
+    body, html { width: 100%; height: 100vh; height: 100dvh; overflow: hidden; background: #fff; color: #202124; }
 
     #screenshot-shield { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #000000 !important; z-index: 999999 !important; display: none; align-items: center; justify-content: center; }
 
@@ -40,7 +40,8 @@
     .header-info { display: flex; flex-direction: column; }
     .header-name { font-weight: 600; font-size: 1.05rem; color: #fff; letter-spacing: 0.3px; }
 
-    #call-ui { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: radial-gradient(circle at 50% 20%, #1c1c2e 0%, #08080c 100%); z-index: 9000; flex-direction: column; overflow: hidden; padding-top: max(20px, env(safe-area-inset-top)); padding-bottom: max(20px, env(safe-area-inset-bottom)); }
+    /* FULL SCREEN CALL UI (100dvh prevents iOS cropping) */
+    #call-ui { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; height: 100dvh; background: radial-gradient(circle at 50% 20%, #1c1c2e 0%, #08080c 100%); z-index: 9000; flex-direction: column; overflow: hidden; padding-top: max(20px, env(safe-area-inset-top)); padding-bottom: max(20px, env(safe-area-inset-bottom)); }
     #remote-video { width: 100%; height: 100%; object-fit: cover; display: none; }
     #audio-only-ui { display: none; position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%); text-align: center; color: #fff; width: 100%; }
     #audio-avatar { width: 120px; height: 120px; border-radius: 50%; background: linear-gradient(135deg, #0a84ff, #005ec4); margin: 0 auto 24px; display: flex; align-items: center; justify-content: center; font-size: 3.5rem; box-shadow: 0 15px 35px rgba(10,132,255,0.3); color: #fff; }
@@ -279,6 +280,7 @@
 
     let heartbeatInterval = null, heartbeatCheckInterval = null, lastPingReceived = 0;
     let activeReactionMsgId = null;
+    let isAnsweringCall = false;
 
     const crystalClearAudioConstraints = { audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true, sampleRate: 48000 } };
     const peerConfig = { host: 'teams-6yw1.onrender.com', port: 443, path: '/', secure: true, config: { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }, { urls: 'stun:stun1.l.google.com:19302' }] } };
@@ -436,11 +438,21 @@
 
     function acceptCall() {
       stopInternalRingtone(); document.getElementById('ring-overlay').style.display = 'none';
+      isAnsweringCall = true;
       const constraints = currentCallType === 'video' ? videoCallConstraints : voiceOnlyConstraints;
-      navigator.mediaDevices.getUserMedia(constraints).then(stream => { localStream = stream; if(currentCallType === 'video') document.getElementById('local-video').srcObject = stream; showCallUI(currentCallType, false); if (incomingCallObj) { incomingCallObj.answer(localStream); setupCallHandlers(incomingCallObj, currentCallType); } }).catch(err => { alert("Permission denied."); rejectCall(); });
+      navigator.mediaDevices.getUserMedia(constraints).then(stream => { 
+        localStream = stream; 
+        if(currentCallType === 'video') document.getElementById('local-video').srcObject = stream; 
+        showCallUI(currentCallType, false); 
+        if (incomingCallObj) { 
+          incomingCallObj.answer(localStream); 
+          setupCallHandlers(incomingCallObj, currentCallType); 
+          isAnsweringCall = false;
+        } 
+      }).catch(err => { alert("Permission denied."); rejectCall(); });
     }
 
-    function rejectCall() { stopInternalRingtone(); document.getElementById('ring-overlay').style.display = 'none'; if (incomingCallObj) { incomingCallObj.close(); incomingCallObj = null; } if (activeConn && activeConn.open) { activeConn.send({ type: 'call_failed_ack' }); } }
+    function rejectCall() { stopInternalRingtone(); document.getElementById('ring-overlay').style.display = 'none'; isAnsweringCall = false; if (incomingCallObj) { incomingCallObj.close(); incomingCallObj = null; } if (activeConn && activeConn.open) { activeConn.send({ type: 'call_failed_ack' }); } }
 
     function endTeamsCall() {
       if (activeCallRef) { activeCallRef.close(); activeCallRef = null; } if (incomingCallObj) { incomingCallObj.close(); incomingCallObj = null; } if (localStream) { localStream.getTracks().forEach(t => t.stop()); localStream = null; }
@@ -460,8 +472,15 @@
       peer.on('connection', incoming => { setupConnection(incoming); });
       peer.on('call', call => {
         incomingCallObj = call; activeCallRef = call; currentCallType = (call.metadata && call.metadata.type) ? call.metadata.type : 'video';
-        document.getElementById('ring-title').innerText = "Incoming " + (currentCallType === 'video' ? 'Video' : 'Audio') + " Call"; 
-        document.getElementById('ring-overlay').style.display = 'flex'; startInternalRingtone();
+        
+        if (isAnsweringCall && localStream) {
+          call.answer(localStream);
+          setupCallHandlers(call, currentCallType);
+          isAnsweringCall = false;
+        } else {
+          document.getElementById('ring-title').innerText = "Incoming " + (currentCallType === 'video' ? 'Video' : 'Audio') + " Call"; 
+          document.getElementById('ring-overlay').style.display = 'flex'; startInternalRingtone();
+        }
       });
     }
 
@@ -504,6 +523,7 @@
           if (data.type === 'ping') { lastPingReceived = Date.now(); return; } 
           if (data.type === 'clear') { document.getElementById('messages').innerHTML = ''; }
           else if (data.type === 'req_offline') { setTimeout(flushFriendOutbox, 1000); }
+          else if (data.type === 'incoming_call') { currentCallType = data.callType || 'video'; document.getElementById('ring-title').innerText = "Incoming " + (currentCallType === 'video' ? 'Video' : 'Voice') + " Call"; document.getElementById('ring-overlay').style.display = 'flex'; startInternalRingtone(); }
           else if (data.type === 'end_call') { endTeamsCall(); }
           else if (data.type === 'msg_ack') { updateMessageTicks(data.msgId, data.status); }
           else if (data.type === 'reaction') { applyReaction(data.msgId, data.emoji); }
