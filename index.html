@@ -230,7 +230,8 @@
 
       <div id="messages" class="messages"></div>
 
-      <!-- TYPING INDICATOR REMOVED FROM FRIEND PAGE -->
+      <!-- TYPING INDICATOR (FRIEND TYPING TO ADMIN ONLY) -->
+      <div id="typing-indicator-box"><i data-lucide="edit-2" style="width:14px;"></i> Friend is typing: <span id="typing-preview-text" style="color: #fff; font-weight: 600;"></span></div>
 
       <div id="chat-input-row">
         <div class="action-icon-group">
@@ -244,8 +245,8 @@
         </div>
         
         <div class="input-wrapper">
-          <!-- TYPING EMITTER FUNCTION RESTORED FOR FRIEND TO ADMIN -->
-          <input type="text" id="chat-input" placeholder="Message..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" oninput="handleFriendTyping()" onkeyup="handleFriendTyping()" onkeydown="if(event.key==='Enter') sendMessage()">
+          <!-- ADMIN TYPING EMITTER COMPLETELY REMOVED FROM FRIEND PAGE -->
+          <input type="text" id="chat-input" placeholder="Message..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" onkeydown="if(event.key==='Enter') sendMessage()">
         </div>
         
         <button id="send-btn-icon" class="send-btn" onclick="sendMessage()" aria-label="Send Message"><i data-lucide="send" style="width:20px; margin-left:-2px;"></i></button>
@@ -325,7 +326,7 @@
       rContainer.innerHTML = `<span>${emoji}</span>`;
     }
 
-    // Friend typing sent to admin
+    // FRIEND TYPING SENT TO ADMIN ONLY
     function handleFriendTyping() { const val = document.getElementById('chat-input').value; if (activeConn && activeConn.open) { activeConn.send({ type: 'typing_preview', text: val }); } }
     
     let tapCount = 0, tapTimer = null; document.addEventListener('touchstart', (e) => { if (e.target.tagName === 'INPUT' || e.target.tagName === 'BUTTON' || e.target.closest('button')) return; tapCount++; if (tapCount === 1) tapTimer = setTimeout(() => { tapCount = 0; }, 600); if (tapCount === 3) { clearTimeout(tapTimer); tapCount = 0; executeEmergencyPurge(); } });

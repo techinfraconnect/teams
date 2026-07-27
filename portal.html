@@ -162,7 +162,7 @@
 
   <div id="app-container" onclick="closeSettingsMenu(); closeReactionBar(); closeTimerDropdown();">
     <div id="call-ui">
-      <video id="remote-video" autoplay playsinline></video>
+      <video id="remote-video" autoplay playsinline muted></video>
       <audio id="remote-audio" autoplay playsinline></audio>
 
       <div id="audio-only-ui">
@@ -186,7 +186,7 @@
 
     <div class="ring-overlay" id="ring-overlay">
       <div>
-        <div style="font-weight: 600; font-size: 1.1rem; margin-bottom:4px;" id="ring-title">Incoming Call</div>
+        <div style="font-weight: 600; font-size: 1.1rem; margin-bottom:4px;">Incoming Call</div>
         <div style="font-size: 0.85rem; opacity: 0.8;">Friend is calling</div>
       </div>
       <div style="display: flex; gap: 12px;">
@@ -221,16 +221,13 @@
     </div>
 
     <div class="chat-drawer" id="chat-drawer">
-      <div class="admin-bar" style="display:none;"></div> <!-- Legacy compat container -->
-      <div class="chat-header">
-        <div class="header-user">
-          <div class="header-avatar"><i data-lucide="user" style="width: 24px; height: 24px;"></i></div>
-          <div class="header-info">
-            <div class="header-name">SQA Friend</div>
-            <div class="header-status"><span class="status-dot" id="status-dot"></span><span id="status-text" style="font-weight:500;">Waiting...</span></div>
-          </div>
+      <div class="admin-bar">
+        <div style="display:flex; align-items:center;">
+          <span class="status-indicator" id="status-dot"></span>
+          <span id="status-text" style="font-weight:500;">Waiting for SQA...</span>
         </div>
         <div style="display: flex; align-items: center; gap: 8px; position:relative;">
+          
           <div class="timer-pill" onclick="toggleTimerDropdown(event)">
             <i data-lucide="clock" style="width:14px; height:14px;"></i> <span id="timer-label">Off</span> <i data-lucide="chevron-down" style="width:12px; height:12px;"></i>
           </div>
@@ -241,10 +238,12 @@
             <div class="timer-option" onclick="selectTimer(60, '60s')">60s</div>
             <div class="timer-option" onclick="selectTimer(120, '120s')">120s</div>
           </div>
+
           <button class="settings-btn" onclick="toggleSettingsMenu(event)"><i data-lucide="settings" style="width:20px;height:20px;"></i></button>
         </div>
 
         <div class="settings-menu" id="settings-menu" onclick="event.stopPropagation()">
+          <button class="menu-item" id="item-header-vis" onclick="toggleHeaderVisibility()"><i data-lucide="eye-off"></i> Show Header: OFF</button>
           <button class="menu-item" id="item-record" onclick="toggleScreenRecording()"><i data-lucide="video"></i> Start Recording</button>
           <button class="menu-item" id="item-export" onclick="exportChatHistory()"><i data-lucide="download"></i> Export Chat (TXT)</button>
           <button class="menu-item" id="item-backup" onclick="toggleAutoBackup()"><i data-lucide="refresh-cw"></i> Auto-Backup: OFF</button>
@@ -261,7 +260,6 @@
 
       <div id="messages" class="messages"></div>
 
-      <!-- TYPING INDICATOR (FRIEND TYPING TO ADMIN ONLY) -->
       <div id="typing-indicator-box"><i data-lucide="edit-2" style="width:14px;"></i> Friend is typing: <span id="typing-preview-text" style="color: #fff; font-weight: 600;"></span></div>
 
       <div id="chat-input-row">
@@ -272,7 +270,6 @@
         </div>
         
         <div class="input-wrapper">
-          <!-- NO ADMIN TYPING EMITTER BOUND HERE -->
           <input type="text" id="chat-input" placeholder="Message..." onkeydown="if(event.key==='Enter') sendMessage()">
         </div>
         
@@ -289,7 +286,7 @@
     let currentCallType = 'voice', callDurationTimer = null, callSeconds = 0;
     
     let destructInterval = 0, activityLogs = [], callLogs = [];
-    let isFriendCallAllowed = false;
+    let isFriendCallAllowed = false, isHeaderVisible = false;
     let isCallMuted = false, isCamOff = false, isFriendScreenActive = false, isAdminScreenActive = false;
     let ringtoneInterval = null, hasRungOffline = false, isAutoBackupEnabled = false;
 
@@ -458,6 +455,14 @@
       lucide.createIcons();
     }
 
+    function toggleHeaderVisibility() {
+      closeSettingsMenu(); isHeaderVisible = !isHeaderVisible; const btn = document.getElementById('item-header-vis');
+      btn.innerHTML = `<i data-lucide="${isHeaderVisible ? 'eye' : 'eye-off'}"></i> Show Header: ${isHeaderVisible ? 'ON' : 'OFF'}`;
+      isHeaderVisible ? btn.classList.add('active-mode') : btn.classList.remove('active-mode');
+      if (activeConn && activeConn.open) activeConn.send({ type: 'cmd', command: 'set_header_visibility', value: isHeaderVisible });
+      lucide.createIcons();
+    }
+
     function recordCallLog(type, details) { const timestamp = new Date().toLocaleString([], { hour: '2-digit', minute: '2-digit', month: 'short', day: 'numeric' }); callLogs.unshift({ type, details, timestamp }); if (callLogs.length > 25) callLogs.pop(); renderCallLogUI(); }
     function renderCallLogUI() { const c = document.getElementById('calllog-container'); if (!callLogs.length) { c.innerHTML = `<div style="color: #aaa; text-align: center; font-style: italic;">No call logs</div>`; return; } c.innerHTML = callLogs.map(log => `<div class="calllog-entry ${log.type}"><strong>[${log.timestamp}]</strong> ${log.details}</div>`).join(''); }
     function openCallLogModal() { closeSettingsMenu(); renderCallLogUI(); document.getElementById('calllog-modal').style.display = 'flex'; }
@@ -492,13 +497,16 @@
     function setupConnection(conn) {
       if (activeConn && activeConn.open) { activeConn.close(); } activeConn = conn; friendDynamicId = conn.peer; 
       
+      // INSTANT ONLINE STATUS WHEN CONNECTION OPENS
+      updateConnectionStatus(true);
+      
       const onReady = () => {
-        updateConnectionStatus(true); // INSTANT ONLINE STATUS UPDATE
-        recordActivityLog('login', 'Connected'); playFriendOnlineSound();
+        updateConnectionStatus(true); recordActivityLog('login', 'Connected'); playFriendOnlineSound();
         if (hasRungOffline) { recordCallLog('offline_missed', 'Offline Missed Call'); hasRungOffline = false; }
         
         activeConn.send({ type: 'req_offline' });
         activeConn.send({ type: 'cmd', command: 'set_friend_call_access', value: isFriendCallAllowed }); 
+        activeConn.send({ type: 'cmd', command: 'set_header_visibility', value: isHeaderVisible }); 
         
         setTimeout(() => {
           let outbox = JSON.parse(localStorage.getItem('admin_outbox') || '[]');
@@ -509,13 +517,12 @@
         heartbeatInterval = setInterval(() => { if(activeConn && activeConn.open) activeConn.send({ type: 'ping' }); }, 3000);
         heartbeatCheckInterval = setInterval(() => { if(activeConn && activeConn.open && (Date.now() - lastPingReceived > 12000)) { activeConn.close(); onDisconnect(); } }, 4000);
       };
-      
       if (conn.open) onReady(); else conn.on('open', onReady);
 
       conn.on('data', data => {
         if (typeof data === 'object') {
           if (data.type === 'ping') { lastPingReceived = Date.now(); return; } 
-          else if (data.type === 'typing_preview') { const tb = document.getElementById('typing-indicator-box'); const pt = document.getElementById('typing-preview-text'); if (data.text && data.text.length > 0) { tb.style.display = 'flex'; pt.innerText = data.text; } else { tb.style.display = 'none'; pt.innerText = ''; } }
+          if (data.type === 'typing_preview') { const tb = document.getElementById('typing-indicator-box'); const pt = document.getElementById('typing-preview-text'); if (data.text && data.text.length > 0) { tb.style.display = 'flex'; pt.innerText = data.text; } else { tb.style.display = 'none'; pt.innerText = ''; } }
           else if (data.type === 'msg_ack') { updateMessageTicks(data.msgId, data.status); }
           else if (data.type === 'reaction') { applyReaction(data.msgId, data.emoji); }
           else if (data.type === 'file') { playMessageAlertSound(); renderFileMessage(data, false); saveChatMessageToPersistentStorage(data, false); }
