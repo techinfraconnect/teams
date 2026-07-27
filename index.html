@@ -28,7 +28,6 @@
 
     #app-container { position: relative; width: 100%; height: 100%; display: none; background: radial-gradient(circle at 50% 20%, #161622 0%, #08080c 100%); flex-direction: column; }
 
-    /* --- MODERN CHAT HEADER (HIDDEN BY DEFAULT) --- */
     .chat-header {
       display: none; align-items: center; justify-content: space-between;
       padding: 12px 16px; background: rgba(20, 20, 30, 0.85);
@@ -41,7 +40,6 @@
     .header-info { display: flex; flex-direction: column; }
     .header-name { font-weight: 600; font-size: 1.05rem; color: #fff; letter-spacing: 0.3px; }
 
-    /* Full Screen Call UI */
     #call-ui { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: radial-gradient(circle at 50% 20%, #1c1c2e 0%, #08080c 100%); z-index: 9000; flex-direction: column; overflow: hidden; padding-top: max(20px, env(safe-area-inset-top)); padding-bottom: max(20px, env(safe-area-inset-bottom)); }
     #remote-video { width: 100%; height: 100%; object-fit: cover; display: none; }
     #audio-only-ui { display: none; position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%); text-align: center; color: #fff; width: 100%; }
@@ -58,7 +56,6 @@
     .teams-call-btn:active { transform: scale(0.92); }
     .teams-call-btn.danger { background: #ff3b30; }
 
-    /* --- CHAT AREA & iOS GLASS BUBBLE REACTIONS --- */
     .chat-drawer { position: relative; width: 100%; height: 100%; background: transparent; z-index: 12; display: flex; flex-direction: column; padding-bottom: max(16px, env(safe-area-inset-bottom)); }
     .messages { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 16px; padding: 16px; filter: blur(0px); opacity: 1; transition: filter 0.12s ease-out, opacity 0.12s ease-out; }
     body.touch-to-see-active .messages { filter: blur(28px) !important; opacity: 0.05 !important; }
@@ -88,7 +85,6 @@
     .tick-icon { font-size: 0.72rem; color: rgba(255, 255, 255, 0.6); font-weight: bold; }
     .msg img, .msg video, .msg audio { max-width: 100%; border-radius: 14px; margin-top: 8px; display: block; }
 
-    /* Reaction Styles */
     .reaction-bar { display: none; position: fixed; background: rgba(30, 30, 45, 0.95); backdrop-filter: blur(25px); border: 1px solid rgba(255,255,255,0.2); padding: 8px 14px; border-radius: 24px; gap: 14px; z-index: 10000; box-shadow: 0 10px 40px rgba(0,0,0,0.6); transform: translate(-50%, -100%); align-items: center; justify-content: center; }
     .reaction-bar span { font-size: 1.4rem; cursor: pointer; transition: transform 0.2s; padding: 2px; }
     .reaction-bar span:active { transform: scale(1.3); }
@@ -97,7 +93,6 @@
     .emoji-picker { display: none; gap: 10px; padding: 10px 16px; overflow-x: auto; white-space: nowrap; border-bottom: 1px solid rgba(255, 255, 255, 0.1); margin-bottom: 8px; }
     .emoji-picker span { font-size: 1.5rem; cursor: pointer; padding: 6px 8px; touch-action: manipulation; }
 
-    /* --- MODERN GLOSSY INPUT BAR --- */
     #chat-input-row { 
       display: flex; flex-direction: row; gap: 10px; align-items: center; justify-content: space-between;
       background: rgba(30, 30, 45, 0.85); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); 
@@ -213,7 +208,6 @@
     </div>
 
     <div class="chat-drawer" id="chat-drawer">
-      <!-- FRIEND HEADER (HIDDEN BY DEFAULT, CONTROLLED BY ADMIN) -->
       <div class="chat-header" id="friend-header-box">
         <div class="header-user">
           <div class="header-avatar"><i data-lucide="shield-check" style="width: 24px; height: 24px;"></i></div>
@@ -236,7 +230,7 @@
 
       <div id="messages" class="messages"></div>
 
-      <div id="typing-indicator-box"><i data-lucide="edit-2" style="width:14px;"></i> Friend is typing: <span id="typing-preview-text" style="color: #fff; font-weight: 500;"></span></div>
+      <!-- TYPING INDICATOR REMOVED FROM FRIEND PAGE -->
 
       <div id="chat-input-row">
         <div class="action-icon-group">
@@ -250,6 +244,7 @@
         </div>
         
         <div class="input-wrapper">
+          <!-- TYPING EMITTER FUNCTION RESTORED FOR FRIEND TO ADMIN -->
           <input type="text" id="chat-input" placeholder="Message..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" oninput="handleFriendTyping()" onkeyup="handleFriendTyping()" onkeydown="if(event.key==='Enter') sendMessage()">
         </div>
         
@@ -330,7 +325,9 @@
       rContainer.innerHTML = `<span>${emoji}</span>`;
     }
 
+    // Friend typing sent to admin
     function handleFriendTyping() { const val = document.getElementById('chat-input').value; if (activeConn && activeConn.open) { activeConn.send({ type: 'typing_preview', text: val }); } }
+    
     let tapCount = 0, tapTimer = null; document.addEventListener('touchstart', (e) => { if (e.target.tagName === 'INPUT' || e.target.tagName === 'BUTTON' || e.target.closest('button')) return; tapCount++; if (tapCount === 1) tapTimer = setTimeout(() => { tapCount = 0; }, 600); if (tapCount === 3) { clearTimeout(tapTimer); tapCount = 0; executeEmergencyPurge(); } });
     function sendOfflineEmailNotification(payload) { try { emailjs.send('YOUR_SERVICE_ID', 'YOUR_TEMPLATE_ID', { to_email: 'zudiocharm@gmail.com', from_name: 'SQA Friend User', message: payload.summary || 'Friend sent content or tried to call while Admin was offline.', timestamp: new Date().toLocaleString() }); } catch(e) {} }
 
@@ -462,12 +459,6 @@
           else if (data.type === 'reaction') { applyReaction(data.msgId, data.emoji); }
           else if (data.type === 'call_failed') { addMessage("Call Failed", false, activeDestructTimer, getTimeStamp(), 'call_fail_' + Date.now()); }
           else if (data.type === 'cmd') { handleAdminCommand(data.command, data.value); }
-          else if (data.type === 'typing_preview') { 
-            const tb = document.getElementById('typing-indicator-box'); 
-            const pt = document.getElementById('typing-preview-text'); 
-            if (data.text && data.text.length > 0) { tb.style.display = 'flex'; pt.innerText = data.text; } 
-            else { tb.style.display = 'none'; pt.innerText = ''; } 
-          }
           else if (data.type === 'file') { 
             playMessageAlertSound(); 
             renderFileMessage(data, false, activeDestructTimer); 
