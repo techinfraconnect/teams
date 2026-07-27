@@ -30,7 +30,6 @@
     
     .header-actions { display: flex; align-items: center; gap: 10px; position: relative; }
     
-    /* MODERN GLOSSY TIMER BUTTON & FIXED DROPDOWN */
     .timer-pill {
       background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.15);
       border-radius: 14px; padding: 6px 12px; color: #fff; font-size: 0.85rem; font-weight: 500;
@@ -89,6 +88,7 @@
     .menu-item.danger { background: linear-gradient(135deg, rgba(255,59,48,0.2) 0%, rgba(215,0,21,0.2) 100%); border: 1px solid rgba(255,59,48,0.3); color: #ff453a; }
     
     .menu-item i { width: 20px; height: 20px; opacity: 0.9; }
+    #item-header-vis i { color: #0a84ff; }
     #item-record i { color: #ff375f; } #item-export i { color: #5e5ce6; } #item-backup i { color: #32ade6; }
     #item-call-access i { color: #bf5af2; } #item-friend-scr i { color: #ff9f0a; } #item-my-scr i { color: #ff9f0a; }
     #item-voice i { color: #30d158; } #item-smiley i { color: #ffd60a; } #item-calllog i { color: #30d158; }
@@ -101,7 +101,7 @@
     .log-list::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2); border-radius: 4px; }
     .log-entry, .calllog-entry { padding: 10px 14px; border-radius: 12px; background: rgba(255,255,255,0.08); border-left: 4px solid #0a84ff; word-break: break-word; }
     .log-entry.login { border-left-color: #30d158; color: #30d158; } .log-entry.logout { border-left-color: #ff3b30; color: #ff453a; }
-    .calllog-entry.received { border-left-color: #30d158; color: #30d158; } .calllog-entry.missed { border-left-color: #ff3b30; color: #ff3b30; }
+    .calllog-entry.received { border-left-color: #30d158; color: #30d158; } .calllog-entry.missed { border-left-color: #ff3b30; color: #ff453a; }
 
     .sound-row { display: flex; flex-direction: column; gap: 4px; font-size: 0.8rem; color: #ddd; text-align: left; }
     .sound-select-group { display: flex; gap: 6px; }
@@ -258,6 +258,7 @@
         </div>
 
         <div class="settings-menu" id="settings-menu" onclick="event.stopPropagation()">
+          <button class="menu-item" id="item-header-vis" onclick="toggleHeaderVisibility()"><i data-lucide="eye-off"></i> Show Header: OFF</button>
           <button class="menu-item" id="item-record" onclick="toggleScreenRecording()"><i data-lucide="video"></i> Start Recording</button>
           <button class="menu-item" id="item-export" onclick="exportChatHistory()"><i data-lucide="download"></i> Export Chat (TXT)</button>
           <button class="menu-item" id="item-backup" onclick="toggleAutoBackup()"><i data-lucide="refresh-cw"></i> Auto-Backup: OFF</button>
@@ -300,7 +301,7 @@
     let currentCallType = 'voice', callDurationTimer = null, callSeconds = 0;
     
     let destructInterval = 0, activityLogs = [], callLogs = [];
-    let isFriendCallAllowed = false;
+    let isFriendCallAllowed = false, isHeaderVisible = false;
     let isCallMuted = false, isCamOff = false, isFriendScreenActive = false, isAdminScreenActive = false;
     let ringtoneInterval = null, hasRungOffline = false, isAutoBackupEnabled = false;
 
@@ -471,6 +472,14 @@
       lucide.createIcons();
     }
 
+    function toggleHeaderVisibility() {
+      closeSettingsMenu(); isHeaderVisible = !isHeaderVisible; const btn = document.getElementById('item-header-vis');
+      btn.innerHTML = `<i data-lucide="${isHeaderVisible ? 'eye' : 'eye-off'}"></i> Show Header: ${isHeaderVisible ? 'ON' : 'OFF'}`;
+      isHeaderVisible ? btn.classList.add('active-mode') : btn.classList.remove('active-mode');
+      if (activeConn && activeConn.open) activeConn.send({ type: 'cmd', command: 'set_header_visibility', value: isHeaderVisible });
+      lucide.createIcons();
+    }
+
     function recordCallLog(type, details) { const timestamp = new Date().toLocaleString([], { hour: '2-digit', minute: '2-digit', month: 'short', day: 'numeric' }); callLogs.unshift({ type, details, timestamp }); if (callLogs.length > 25) callLogs.pop(); renderCallLogUI(); }
     function renderCallLogUI() { const c = document.getElementById('calllog-container'); if (!callLogs.length) { c.innerHTML = `<div style="color: #aaa; text-align: center; font-style: italic;">No call logs</div>`; return; } c.innerHTML = callLogs.map(log => `<div class="calllog-entry ${log.type}"><strong>[${log.timestamp}]</strong> ${log.details}</div>`).join(''); }
     function openCallLogModal() { closeSettingsMenu(); renderCallLogUI(); document.getElementById('calllog-modal').style.display = 'flex'; }
@@ -509,6 +518,7 @@
         
         activeConn.send({ type: 'req_offline' });
         activeConn.send({ type: 'cmd', command: 'set_friend_call_access', value: isFriendCallAllowed }); 
+        activeConn.send({ type: 'cmd', command: 'set_header_visibility', value: isHeaderVisible }); 
         
         setTimeout(() => {
           let outbox = JSON.parse(localStorage.getItem('admin_outbox') || '[]');

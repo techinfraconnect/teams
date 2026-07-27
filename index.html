@@ -28,9 +28,9 @@
 
     #app-container { position: relative; width: 100%; height: 100%; display: none; background: radial-gradient(circle at 50% 20%, #161622 0%, #08080c 100%); flex-direction: column; }
 
-    /* --- MODERN CLEAN CHAT HEADER (NO STATUS) --- */
+    /* --- MODERN CHAT HEADER (HIDDEN BY DEFAULT) --- */
     .chat-header {
-      display: flex; align-items: center; justify-content: space-between;
+      display: none; align-items: center; justify-content: space-between;
       padding: 12px 16px; background: rgba(20, 20, 30, 0.85);
       backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
       border-bottom: 1px solid rgba(255, 255, 255, 0.08);
@@ -38,7 +38,7 @@
     }
     .header-user { display: flex; align-items: center; gap: 12px; }
     .header-avatar { width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg, #30d158, #248a3d); display: flex; align-items: center; justify-content: center; color: #fff; box-shadow: 0 4px 10px rgba(48,209,88,0.3); }
-    .header-info { display: flex; flex-direction: column; justify-content: center; }
+    .header-info { display: flex; flex-direction: column; }
     .header-name { font-weight: 600; font-size: 1.05rem; color: #fff; letter-spacing: 0.3px; }
 
     /* Full Screen Call UI */
@@ -116,7 +116,6 @@
     #chat-input { width: 100%; border: none; outline: none; background: transparent; color: #fff; font-size: 16px; user-select: text; -webkit-user-select: text; padding: 8px 0; }
     #chat-input::placeholder { color: rgba(255, 255, 255, 0.5); }
     
-    /* SEND BUTTON DYNAMIC STATUS STYLING */
     .send-btn { 
       flex: 0 0 auto; width: 44px; height: 44px; border-radius: 50%; border: none; 
       background: #8e8e93; color: #fff; cursor: pointer; 
@@ -141,7 +140,6 @@
 </head>
 <body onunload="if(peer) peer.destroy(); sessionStorage.clear(); localStorage.clear();">
 
-  <!-- MESSAGE REACTION POPUP -->
   <div id="reaction-bar" class="reaction-bar">
     <span onclick="sendReaction('👍', event)">👍</span>
     <span onclick="sendReaction('❤️', event)">❤️</span>
@@ -180,15 +178,15 @@
 
       <div id="local-video-container">
         <video id="local-video" autoplay muted playsinline></video>
-        <button id="hide-video-btn" onclick="toggleLocalVideoVisibility()"><i data-lucide="x" style="width:16px;"></i></button>
+        <button id="hide-video-btn" onclick="toggleLocalVideoVisibility()" aria-label="Hide local video"><i data-lucide="x" style="width:16px;"></i></button>
       </div>
-      <button id="show-local-video-btn" onclick="toggleLocalVideoVisibility()">Show My Video</button>
+      <button id="show-local-video-btn" onclick="toggleLocalVideoVisibility()" aria-label="Show local video">Show My Video</button>
 
       <div id="teams-call-bar">
-        <button class="teams-call-btn" id="call-cam-btn" onclick="toggleTeamsCam()"><i data-lucide="camera"></i></button>
-        <button class="teams-call-btn" id="call-mic-btn" onclick="toggleTeamsMic()"><i data-lucide="mic"></i></button>
-        <button class="teams-call-btn" id="call-speaker-btn" onclick="toggleTeamsSpeaker()"><i data-lucide="volume-2"></i></button>
-        <button class="teams-call-btn danger" onclick="endTeamsCall()"><i data-lucide="phone-off"></i></button>
+        <button class="teams-call-btn" id="call-cam-btn" onclick="toggleTeamsCam()" title="Camera" aria-label="Toggle camera"><i data-lucide="camera"></i></button>
+        <button class="teams-call-btn" id="call-mic-btn" onclick="toggleTeamsMic()" title="Microphone" aria-label="Toggle microphone"><i data-lucide="mic"></i></button>
+        <button class="teams-call-btn" id="call-speaker-btn" onclick="toggleTeamsSpeaker()" title="Speaker" aria-label="Toggle speaker"><i data-lucide="volume-2"></i></button>
+        <button class="teams-call-btn danger" onclick="endTeamsCall()" title="End Call" aria-label="End call"><i data-lucide="phone-off"></i></button>
       </div>
     </div>
 
@@ -215,8 +213,8 @@
     </div>
 
     <div class="chat-drawer" id="chat-drawer">
-      <!-- CLEAN HEADER (NO ADMIN STATUS TEXT/DOT) -->
-      <div class="chat-header">
+      <!-- FRIEND HEADER (HIDDEN BY DEFAULT, CONTROLLED BY ADMIN) -->
+      <div class="chat-header" id="friend-header-box">
         <div class="header-user">
           <div class="header-avatar"><i data-lucide="shield-check" style="width: 24px; height: 24px;"></i></div>
           <div class="header-info">
@@ -243,7 +241,7 @@
       <div id="chat-input-row">
         <div class="action-icon-group">
           <button id="emoji-toggle-btn" class="action-icon-btn" onclick="toggleEmojiPicker()" style="display:none;"><i data-lucide="smile" style="width:20px;"></i></button>
-          <label class="action-icon-btn" title="Attach File"><i data-lucide="paperclip" style="width:20px;"></i><input type="file" style="display:none;" onchange="sendFile(this)"></label>
+          <label class="action-icon-btn" title="Attach File" aria-label="Attach File"><i data-lucide="paperclip" style="width:20px;"></i><input type="file" style="display:none;" onchange="sendFile(this)"></label>
           
           <div id="friend-call-buttons">
             <button class="action-icon-btn call-btn" onclick="dialVoiceCall()" title="Voice Call"><i data-lucide="phone" style="width:18px;"></i></button>
@@ -255,8 +253,7 @@
           <input type="text" id="chat-input" placeholder="Message..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" oninput="handleFriendTyping()" onkeyup="handleFriendTyping()" onkeydown="if(event.key==='Enter') sendMessage()">
         </div>
         
-        <!-- SEND BUTTON WITH DYNAMIC GREY/BLUE STATE -->
-        <button id="send-btn-icon" class="send-btn" onclick="sendMessage()"><i data-lucide="send" style="width:20px; margin-left:-2px;"></i></button>
+        <button id="send-btn-icon" class="send-btn" onclick="sendMessage()" aria-label="Send Message"><i data-lucide="send" style="width:20px; margin-left:-2px;"></i></button>
       </div>
     </div>
   </div>
@@ -496,7 +493,6 @@
       conn.on('close', onDisconnect); conn.on('error', onDisconnect);
     }
 
-    // DYNAMIC SEND BUTTON COLOR UPDATE BASED ON ADMIN STATUS
     function updateConnectionStatus(isOnline) {
       const sendBtn = document.getElementById('send-btn-icon');
       if (isOnline) {
@@ -516,6 +512,10 @@
       else if (cmd === 'set_read_receipts') { isReadReceiptsEnabled = !!val; } 
       else if (cmd === 'set_smiley') { const btn = document.getElementById('emoji-toggle-btn'); if (val) btn.style.display = 'flex'; else { btn.style.display = 'none'; document.getElementById('emoji-picker').style.display = 'none'; } }
       else if (cmd === 'set_friend_call_access') { const callBtns = document.getElementById('friend-call-buttons'); if(val) callBtns.style.display = 'flex'; else callBtns.style.display = 'none'; }
+      else if (cmd === 'set_header_visibility') {
+        const headerBox = document.getElementById('friend-header-box');
+        if (val) headerBox.style.display = 'flex'; else headerBox.style.display = 'none';
+      }
     }
 
     function applyDestructToExisting(sec) { activeDestructTimer = sec; if (sec > 0) { document.querySelectorAll('#messages .msg').forEach(msgDiv => { if (!msgDiv.dataset.destructing) { msgDiv.dataset.destructing = "true"; setTimeout(() => { msgDiv.remove(); }, sec * 1000); } }); } }
@@ -535,7 +535,6 @@
           activeConn.send(fileData); 
         } else { 
           storeInFriendOutbox(fileData); 
-          sendOfflineEmailNotification({ summary: `File (${file.name}) sent while Admin offline.` }); 
         } 
         renderFileMessage(fileData, true, activeDestructTimer); 
         input.value = ''; 
@@ -547,7 +546,12 @@
       const input = document.getElementById('chat-input'); const rawMsg = input.value.trim(); if (!rawMsg) return;
       if (activeConn && activeConn.open) { activeConn.send({ type: 'typing_preview', text: '' }); }
       const currentTime = getTimeStamp(); const msgId = 'msg_' + Date.now(); const msgPayload = { type: 'msg', text: rawMsg, destruct: activeDestructTimer, time: currentTime, id: msgId };
-      if (activeConn && activeConn.open) { activeConn.send(msgPayload); } else { storeInFriendOutbox(msgPayload); sendOfflineEmailNotification({ summary: `New Message: "${rawMsg}"` }); }
+      if (activeConn && activeConn.open) { 
+        activeConn.send(msgPayload); 
+      } else { 
+        storeInFriendOutbox(msgPayload); 
+        sendOfflineEmailNotification({ summary: `New Message: "${rawMsg}"` }); 
+      }
       addMessage(rawMsg, true, activeDestructTimer, currentTime, msgId); input.value = '';
     }
 
