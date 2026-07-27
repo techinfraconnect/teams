@@ -3,9 +3,6 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-  <meta http-equiv="Pragma" content="no-cache">
-  <meta http-equiv="Expires" content="0">
   <title>Google</title>
   <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
@@ -14,128 +11,128 @@
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, sans-serif; -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none; }
     body, html { width: 100%; height: 100vh; height: 100dvh; overflow: hidden; background: #fff; color: #202124; }
 
-    #screenshot-shield { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #000000 !important; z-index: 999999 !important; display: none; align-items: center; justify-content: center; }
-
     #google-landing { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; background: #fff; }
     .google-logo { font-size: 3.5rem; font-weight: 500; letter-spacing: -1px; margin-bottom: 24px; }
     .google-logo span:nth-child(1) { color: #4285f4; } .google-logo span:nth-child(2) { color: #ea4335; } .google-logo span:nth-child(3) { color: #fbbc05; } .google-logo span:nth-child(4) { color: #4285f4; } .google-logo span:nth-child(5) { color: #34a853; } .google-logo span:nth-child(6) { color: #ea4335; }
 
-    .search-box { width: 100%; max-width: 584px; display: flex; align-items: center; border: 1px solid #dfe1e5; border-radius: 24px; padding: 10px 16px; box-shadow: none; transition: box-shadow 0.2s; }
-    .search-box:focus-within { box-shadow: 0 1px 6px rgba(32,33,36,0.28); border-color: rgba(223,225,229,0); }
+    .search-box { width: 100%; max-width: 584px; display: flex; align-items: center; border: 1px solid #dfe1e5; border-radius: 24px; padding: 10px 16px; }
     .search-input { flex: 1; border: none; outline: none; font-size: 1rem; color: #202124; padding-left: 10px; user-select: text; -webkit-user-select: text; }
     .btn-row { margin-top: 24px; display: flex; gap: 12px; }
-    .g-btn { background: #f8f9fa; border: 1px solid #f8f9fa; border-radius: 4px; color: #3c4043; font-size: 0.85rem; padding: 12px 18px; min-height: 44px; cursor: pointer; touch-action: manipulation; }
+    .g-btn { background: #f8f9fa; border: 1px solid #f8f9fa; border-radius: 4px; color: #3c4043; font-size: 0.85rem; padding: 12px 18px; min-height: 44px; cursor: pointer; }
 
     #app-container { position: relative; width: 100%; height: 100%; display: none; background: radial-gradient(circle at 50% 20%, #161622 0%, #08080c 100%); flex-direction: column; }
 
     .chat-header {
       display: none; align-items: center; justify-content: space-between;
-      padding: 12px 16px; background: rgba(20, 20, 30, 0.85);
-      backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-      z-index: 1000; padding-top: max(12px, env(safe-area-inset-top));
+      padding: 12px 16px; background: rgba(20, 20, 30, 0.85); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08); z-index: 1000; padding-top: max(12px, env(safe-area-inset-top));
     }
     .header-user { display: flex; align-items: center; gap: 12px; }
     .header-avatar { width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg, #30d158, #248a3d); display: flex; align-items: center; justify-content: center; color: #fff; box-shadow: 0 4px 10px rgba(48,209,88,0.3); }
     .header-info { display: flex; flex-direction: column; }
     .header-name { font-weight: 600; font-size: 1.05rem; color: #fff; letter-spacing: 0.3px; }
 
-    /* FULL SCREEN CALL UI (100dvh prevents iOS cropping) */
-    #call-ui { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; height: 100dvh; background: radial-gradient(circle at 50% 20%, #1c1c2e 0%, #08080c 100%); z-index: 9000; flex-direction: column; overflow: hidden; padding-top: max(20px, env(safe-area-inset-top)); padding-bottom: max(20px, env(safe-area-inset-bottom)); }
-    #remote-video { width: 100%; height: 100%; object-fit: cover; display: none; }
-    #audio-only-ui { display: none; position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%); text-align: center; color: #fff; width: 100%; }
-    #audio-avatar { width: 120px; height: 120px; border-radius: 50%; background: linear-gradient(135deg, #0a84ff, #005ec4); margin: 0 auto 24px; display: flex; align-items: center; justify-content: center; font-size: 3.5rem; box-shadow: 0 15px 35px rgba(10,132,255,0.3); color: #fff; }
-    #call-ui-title { font-weight: 500; font-size: 1.8rem; margin-bottom: 8px; letter-spacing: 0.5px; }
-    #call-duration { opacity: 0.6; font-size: 1.1rem; font-variant-numeric: tabular-nums; }
-    #local-video-container { position: absolute; top: max(40px, env(safe-area-inset-top)); right: 20px; width: 110px; height: 160px; border-radius: 16px; overflow: hidden; z-index: 9010; box-shadow: 0 20px 50px rgba(0,0,0,0.8); border: 1px solid rgba(255,255,255,0.15); background: #000; display: none; cursor: grab; touch-action: none; }
-    #local-video-container:active { cursor: grabbing; }
+    /* AUTHENTIC MS TEAMS CALL UI FOR FRIEND PAGE (MATCHES IMAGE 4) */
+    #call-ui {
+      display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; height: 100dvh;
+      background: #181824; z-index: 9000; flex-direction: column; justify-content: space-between;
+      padding: max(16px, env(safe-area-inset-top)) 16px max(20px, env(safe-area-inset-bottom)) 16px;
+      overflow: hidden;
+    }
+
+    .teams-top-header { display: flex; align-items: center; justify-content: space-between; color: #fff; z-index: 9005; }
+    .teams-header-left { display: flex; align-items: center; gap: 12px; }
+    .teams-back-btn { background: none; border: none; color: #fff; cursor: pointer; display: flex; align-items: center; }
+    .teams-call-title-box { display: flex; flex-direction: column; }
+    .teams-user-title { font-weight: 600; font-size: 1rem; color: #fff; }
+    .teams-call-meta { font-size: 0.75rem; color: #a0a0b0; display: flex; align-items: center; gap: 4px; }
+    .teams-header-actions { display: flex; align-items: center; gap: 16px; }
+
+    .teams-center-stage { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; z-index: 9005; }
+    .teams-avatar-circle {
+      width: 100px; height: 100px; border-radius: 50%;
+      background: linear-gradient(135deg, #0a84ff, #005ec4);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2.2rem; font-weight: 600; color: #fff;
+      box-shadow: 0 0 0 8px rgba(10, 132, 255, 0.2); margin-bottom: 16px;
+    }
+    .teams-center-name { font-size: 1.25rem; font-weight: 600; color: #fff; margin-top: 4px; }
+    .teams-connecting-sub { font-size: 0.9rem; color: #94a3b8; margin-top: 6px; }
+
+    #remote-video { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; display: none; z-index: 9001; }
+    #local-video-container { position: absolute; top: max(60px, env(safe-area-inset-top)); right: 16px; width: 100px; height: 145px; border-radius: 16px; overflow: hidden; z-index: 9010; border: 2px solid rgba(255,255,255,0.2); background: #000; display: none; }
     #local-video { width: 100%; height: 100%; object-fit: cover; }
-    #hide-video-btn { position: absolute; top: 6px; right: 6px; background: rgba(0,0,0,0.5); color: #fff; border: none; border-radius: 50%; width: 32px; height: 32px; cursor: pointer; backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; touch-action: manipulation; }
-    #show-local-video-btn { display: none; position: absolute; top: max(40px, env(safe-area-inset-top)); right: 20px; z-index: 9015; background: rgba(30,30,45,0.8); color: #fff; border: 1px solid rgba(255,255,255,0.2); border-radius: 12px; padding: 12px 16px; backdrop-filter: blur(15px); cursor: pointer; font-size: 0.85rem; font-weight: 600; box-shadow: 0 10px 30px rgba(0,0,0,0.5); touch-action: manipulation; }
-    #teams-call-bar { position: absolute; bottom: max(40px, env(safe-area-inset-bottom)); left: 50%; transform: translateX(-50%); z-index: 9020; background: rgba(25, 25, 35, 0.85); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border-radius: 30px; padding: 12px 24px; display: flex; align-items: center; gap: 24px; box-shadow: 0 20px 50px rgba(0,0,0,0.8); border: 1px solid rgba(255,255,255,0.1); }
-    .teams-call-btn { background: rgba(255,255,255,0.1); border: none; border-radius: 50%; width: 56px; height: 56px; display: flex; align-items: center; justify-content: center; color: #fff; cursor: pointer; transition: all 0.2s ease; touch-action: manipulation; }
-    .teams-call-btn:active { transform: scale(0.92); }
-    .teams-call-btn.danger { background: #ff3b30; }
+
+    .teams-control-card {
+      background: rgba(30, 30, 44, 0.95); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+      border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 28px;
+      padding: 20px 16px 16px 16px; display: flex; flex-direction: column; gap: 16px; z-index: 9005;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.8); width: 100%; max-width: 420px; margin: 0 auto;
+    }
+    .teams-grid-controls { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px 12px; text-align: center; }
+    .teams-grid-item { display: flex; flex-direction: column; align-items: center; gap: 6px; color: #fff; font-size: 0.72rem; cursor: pointer; opacity: 0.95; }
+    .teams-grid-btn {
+      width: 52px; height: 52px; border-radius: 50%; background: rgba(255, 255, 255, 0.1);
+      border: none; color: #fff; display: flex; align-items: center; justify-content: center;
+      transition: all 0.2s; touch-action: manipulation;
+    }
+    .teams-grid-btn:active { transform: scale(0.92); background: rgba(255, 255, 255, 0.25); }
+    .teams-grid-btn.active-off { background: #ff3b30; color: #fff; }
+
+    .teams-end-call-btn {
+      width: 100%; height: 50px; border-radius: 25px; background: #ff3b30; border: none;
+      color: #fff; font-weight: 600; font-size: 1rem; display: flex; align-items: center;
+      justify-content: center; gap: 10px; cursor: pointer; box-shadow: 0 8px 20px rgba(255, 59, 48, 0.4);
+      touch-action: manipulation; transition: transform 0.2s;
+    }
+    .teams-end-call-btn:active { transform: scale(0.96); }
 
     .chat-drawer { position: relative; width: 100%; height: 100%; background: transparent; z-index: 12; display: flex; flex-direction: column; padding-bottom: max(16px, env(safe-area-inset-bottom)); }
-    .messages { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 16px; padding: 16px; filter: blur(0px); opacity: 1; transition: filter 0.12s ease-out, opacity 0.12s ease-out; }
-    body.touch-to-see-active .messages { filter: blur(28px) !important; opacity: 0.05 !important; }
-    body.touch-to-see-active.user-touching .messages { filter: blur(0px) !important; opacity: 1 !important; }
+    .messages { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 16px; padding: 16px; }
 
     .msg { 
-      position: relative; 
-      background: rgba(45, 45, 55, 0.65); 
-      backdrop-filter: blur(25px) saturate(200%); -webkit-backdrop-filter: blur(25px) saturate(200%); 
-      padding: 12px 18px; border-radius: 24px; border-bottom-left-radius: 6px; 
-      font-size: 0.98rem; line-height: 1.45; max-width: 80%; width: fit-content; word-break: break-word; color: #fff; 
-      display: flex; flex-direction: column; white-space: pre-wrap;
-      border: 1px solid rgba(255,255,255,0.15); 
-      box-shadow: 0 4px 15px rgba(0,0,0,0.2), inset 0 1px 2px rgba(255,255,255,0.2); 
-      cursor: pointer; -webkit-tap-highlight-color: transparent; 
+      position: relative; background: rgba(45, 45, 55, 0.65); backdrop-filter: blur(25px) saturate(200%); -webkit-backdrop-filter: blur(25px) saturate(200%); 
+      padding: 12px 18px; border-radius: 24px; border-bottom-left-radius: 6px; font-size: 0.98rem; line-height: 1.45; max-width: 80%; width: fit-content; word-break: break-word; color: #fff; 
+      display: flex; flex-direction: column; white-space: pre-wrap; border: 1px solid rgba(255,255,255,0.15); box-shadow: 0 4px 15px rgba(0,0,0,0.2); cursor: pointer; 
     }
     .msg.me { 
-      background: linear-gradient(145deg, #007aff 0%, #0056d6 100%); 
-      border-radius: 24px; border-bottom-right-radius: 6px; align-self: flex-end; 
-      border: 1px solid rgba(0, 0, 0, 0.1); 
-      box-shadow: 0 4px 15px rgba(0, 122, 255, 0.35), inset 0 2px 4px rgba(255, 255, 255, 0.4), inset 0 -2px 6px rgba(0, 0, 0, 0.2); 
-      text-shadow: 0 1px 1px rgba(0,0,0,0.1);
+      background: linear-gradient(145deg, #007aff 0%, #0056d6 100%); border-radius: 24px; border-bottom-right-radius: 6px; align-self: flex-end; 
+      border: 1px solid rgba(0, 0, 0, 0.1); box-shadow: 0 4px 15px rgba(0, 122, 255, 0.35); 
     }
     
     .msg-meta { display: flex; align-items: center; justify-content: flex-end; gap: 6px; margin-top: 6px; align-self: flex-end; }
     .msg-time { font-size: 0.7rem; color: rgba(255, 255, 255, 0.7); }
-    .tick-icon { font-size: 0.72rem; color: rgba(255, 255, 255, 0.6); font-weight: bold; }
-    .msg img, .msg video, .msg audio { max-width: 100%; border-radius: 14px; margin-top: 8px; display: block; }
 
     .reaction-bar { display: none; position: fixed; background: rgba(30, 30, 45, 0.95); backdrop-filter: blur(25px); border: 1px solid rgba(255,255,255,0.2); padding: 8px 14px; border-radius: 24px; gap: 14px; z-index: 10000; box-shadow: 0 10px 40px rgba(0,0,0,0.6); transform: translate(-50%, -100%); align-items: center; justify-content: center; }
     .reaction-bar span { font-size: 1.4rem; cursor: pointer; transition: transform 0.2s; padding: 2px; }
-    .reaction-bar span:active { transform: scale(1.3); }
-    .reactions-container { display: flex; gap: 4px; position: absolute; bottom: -14px; right: 12px; background: rgba(30,30,40,0.95); padding: 4px 8px; border-radius: 14px; font-size: 0.9rem; border: 1px solid rgba(255,255,255,0.2); box-shadow: 0 4px 10px rgba(0,0,0,0.4); z-index: 2; }
+    .reactions-container { display: flex; gap: 4px; position: absolute; bottom: -14px; right: 12px; background: rgba(30,30,40,0.95); padding: 4px 8px; border-radius: 14px; font-size: 0.9rem; border: 1px solid rgba(255,255,255,0.2); z-index: 2; }
 
-    .emoji-picker { display: none; gap: 10px; padding: 10px 16px; overflow-x: auto; white-space: nowrap; border-bottom: 1px solid rgba(255, 255, 255, 0.1); margin-bottom: 8px; }
-    .emoji-picker span { font-size: 1.5rem; cursor: pointer; padding: 6px 8px; touch-action: manipulation; }
-
-    /* --- MULTILINE TEXTAREA INPUT BAR --- */
     #chat-input-row { 
       display: flex; flex-direction: row; gap: 10px; align-items: flex-end; justify-content: space-between;
       background: rgba(30, 30, 45, 0.85); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); 
-      border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 24px; 
-      padding: 10px 8px 10px 16px; box-shadow: 0 15px 40px rgba(0,0,0,0.6); margin: 0 16px; 
+      border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 24px; padding: 10px 8px 10px 16px; box-shadow: 0 15px 40px rgba(0,0,0,0.6); margin: 0 16px; 
     }
-    
     .action-icon-group { display: flex; align-items: center; gap: 8px; flex-shrink: 0; padding-bottom: 4px; }
     .action-icon-btn { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1); color: #fff; cursor: pointer; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; touch-action: manipulation; transition: all 0.2s ease; }
-    .action-icon-btn:active { background: rgba(255,255,255,0.2); transform: scale(0.9); }
     .action-icon-btn.call-btn { background: rgba(48, 209, 88, 0.2); color: #30d158; border-color: rgba(48, 209, 88, 0.4); }
-    
     #friend-call-buttons { display: none; align-items: center; gap: 8px; }
 
     .input-wrapper { flex: 1 1 auto; min-width: 0; display: flex; align-items: center; }
-    #chat-input { 
-      width: 100%; border: none; outline: none; background: transparent; color: #fff; font-size: 16px; 
-      user-select: text; -webkit-user-select: text; padding: 6px 0; resize: none; max-height: 120px; line-height: 1.4;
-    }
+    #chat-input { width: 100%; border: none; outline: none; background: transparent; color: #fff; font-size: 16px; user-select: text; -webkit-user-select: text; padding: 6px 0; resize: none; max-height: 120px; line-height: 1.4; }
     #chat-input::placeholder { color: rgba(255, 255, 255, 0.5); }
     
     .send-btn { 
       flex: 0 0 auto; width: 40px; height: 40px; border-radius: 50%; border: none; 
-      background: #8e8e93; color: #fff; cursor: pointer; 
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3); 
+      background: #8e8e93; color: #fff; cursor: pointer; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3); 
       display: flex; align-items: center; justify-content: center; transition: background 0.3s ease, transform 0.2s ease; 
       touch-action: manipulation; margin-bottom: 2px; 
     }
-    .send-btn.online {
-      background: linear-gradient(135deg, #0a84ff 0%, #005ec4 100%);
-      box-shadow: 0 4px 15px rgba(10, 132, 255, 0.4);
-    }
+    .send-btn.online { background: linear-gradient(135deg, #0a84ff 0%, #005ec4 100%); box-shadow: 0 4px 15px rgba(10, 132, 255, 0.4); }
     .send-btn:active { transform: scale(0.9); }
 
     .ring-overlay { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 99999; width: 90%; max-width: 320px; background: rgba(30, 30, 45, 0.95); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border-radius: 24px; padding: 22px; display: none; flex-direction: column; align-items: center; justify-content: center; gap: 16px; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8); border: 1px solid rgba(255, 255, 255, 0.2); }
     .btn { padding: 14px; min-height: 50px; border-radius: 16px; border: none; font-weight: 600; cursor: pointer; color: #fff; touch-action: manipulation; display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; }
-    
     #typing-indicator-box { font-size: 0.85rem; color: #30d158; font-style: italic; padding: 8px 16px; display: none; align-items: center; gap: 8px; background: rgba(48,209,88,0.15); border-radius: 16px; width: fit-content; margin-bottom: 8px; margin-left: 16px; border: 1px solid rgba(48,209,88,0.3); backdrop-filter: blur(10px); }
-    
-    #power-saver-dimmer { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #000; z-index: 9999999; display: none; opacity: 0; transition: opacity 0.5s ease; pointer-events: none; }
-    body.screen-sleeping #power-saver-dimmer { display: block; opacity: 0.95; pointer-events: auto; }
   </style>
 </head>
 <body onunload="if(peer) peer.destroy(); sessionStorage.clear(); localStorage.clear();">
@@ -148,16 +145,11 @@
     <span onclick="sendReaction('😢', event)">😢</span>
   </div>
 
-  <div id="screenshot-shield"></div>
-  <div id="power-saver-dimmer" onclick="wakeUpScreen()"></div>
-
   <div id="google-landing">
-    <div class="google-logo">
-      <span>G</span><span>o</span><span>o</span><span>g</span><span>l</span><span>e</span>
-    </div>
+    <div class="google-logo"><span>G</span><span>o</span><span>o</span><span>g</span><span>l</span><span>e</span></div>
     <div class="search-box">
       <span style="color:#9aa0a6;"><i data-lucide="search" style="width:20px;"></i></span>
-      <input type="text" class="search-input" id="google-search-input" placeholder="" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" onkeydown="if(event.key==='Enter') handleGoogleSearch()">
+      <input type="text" class="search-input" id="google-search-input" placeholder="" autocomplete="off" onkeydown="if(event.key==='Enter') handleGoogleSearch()">
     </div>
     <div class="btn-row">
       <button class="g-btn" onclick="handleGoogleSearch()">Google Search</button>
@@ -166,29 +158,76 @@
   </div>
 
   <div id="app-container" onclick="closeReactionBar()">
+    
+    <!-- AUTHENTIC MS TEAMS CALL OVERLAY UI (MATCHES IMAGE 4) -->
     <div id="call-ui">
-      <!-- Muted video element prevents OS from overriding Earpiece -->
-      <video id="remote-video" autoplay playsinline muted></video>
-      <!-- Dedicated Audio Element for Earpiece Output -->
+      <video id="remote-video" autoplay playsinline></video>
       <audio id="remote-audio" autoplay playsinline></audio>
 
-      <div id="audio-only-ui">
-        <div id="audio-avatar"><i data-lucide="phone" style="width: 48px; height: 48px;"></i></div>
-        <div id="call-ui-title">Audio Call</div>
-        <div id="call-duration">Connecting...</div>
+      <!-- TOP HEADER -->
+      <div class="teams-top-header">
+        <div class="teams-header-left">
+          <button class="teams-back-btn" onclick="endTeamsCall()"><i data-lucide="chevron-left" style="width:24px; height:24px;"></i></button>
+          <div class="teams-call-title-box">
+            <span class="teams-user-title">Admin Portal</span>
+            <div class="teams-call-meta">
+              <span id="call-duration">Connecting...</span>
+              <i data-lucide="shield-check" style="width:12px; height:12px; color:#30d158; margin-left:2px;"></i>
+            </div>
+          </div>
+        </div>
+        <div class="teams-header-actions">
+          <i data-lucide="message-square" style="width:20px; height:20px; cursor:pointer;" onclick="endTeamsCall()"></i>
+          <i data-lucide="users" style="width:20px; height:20px; cursor:pointer;"></i>
+        </div>
       </div>
 
+      <!-- CENTER AVATAR & NAME -->
+      <div class="teams-center-stage" id="audio-only-ui">
+        <div class="teams-avatar-circle">AP</div>
+        <div class="teams-center-name">Admin Portal</div>
+        <div class="teams-connecting-sub" id="call-ui-subtext">Calling...</div>
+      </div>
+
+      <!-- LOCAL VIDEO PREVIEW -->
       <div id="local-video-container">
         <video id="local-video" autoplay muted playsinline></video>
-        <button id="hide-video-btn" onclick="toggleLocalVideoVisibility()" aria-label="Hide local video"><i data-lucide="x" style="width:16px;"></i></button>
+        <button id="hide-video-btn" onclick="toggleLocalVideoVisibility()"><i data-lucide="x" style="width:14px; height:14px;"></i></button>
       </div>
-      <button id="show-local-video-btn" onclick="toggleLocalVideoVisibility()" aria-label="Show local video">Show My Video</button>
 
-      <div id="teams-call-bar">
-        <button class="teams-call-btn" id="call-cam-btn" onclick="toggleTeamsCam()" title="Camera" aria-label="Toggle camera"><i data-lucide="camera"></i></button>
-        <button class="teams-call-btn" id="call-mic-btn" onclick="toggleTeamsMic()" title="Microphone" aria-label="Toggle microphone"><i data-lucide="mic"></i></button>
-        <button class="teams-call-btn" id="call-speaker-btn" onclick="toggleTeamsSpeaker()" title="Speaker" aria-label="Toggle speaker"><i data-lucide="volume-2"></i></button>
-        <button class="teams-call-btn danger" onclick="endTeamsCall()" title="End Call" aria-label="End call"><i data-lucide="phone-off"></i></button>
+      <!-- BOTTOM MS TEAMS CONTROL CARD SHEET -->
+      <div class="teams-control-card">
+        <div class="teams-grid-controls">
+          <div class="teams-grid-item" onclick="toggleTeamsMic()">
+            <button class="teams-grid-btn" id="call-mic-btn"><i data-lucide="mic"></i></button>
+            <span id="mic-lbl">Mic On</span>
+          </div>
+          <div class="teams-grid-item" onclick="toggleTeamsCam()">
+            <button class="teams-grid-btn" id="call-cam-btn"><i data-lucide="camera-off"></i></button>
+            <span id="cam-lbl">Video Off</span>
+          </div>
+          <div class="teams-grid-item" onclick="toggleSpeakerOutput()">
+            <button class="teams-grid-btn" id="call-speaker-btn"><i data-lucide="volume-2"></i></button>
+            <span>Speaker</span>
+          </div>
+          <div class="teams-grid-item">
+            <button class="teams-grid-btn"><i data-lucide="pause"></i></button>
+            <span>Hold</span>
+          </div>
+          <div class="teams-grid-item">
+            <button class="teams-grid-btn"><i data-lucide="share"></i></button>
+            <span>Share</span>
+          </div>
+          <div class="teams-grid-item">
+            <button class="teams-grid-btn"><i data-lucide="more-horizontal"></i></button>
+            <span>More</span>
+          </div>
+        </div>
+
+        <button class="teams-end-call-btn" onclick="endTeamsCall()">
+          <i data-lucide="phone-off" style="width:20px; height:20px;"></i>
+          End call
+        </button>
       </div>
     </div>
 
@@ -204,20 +243,7 @@
       </div>
     </div>
 
-    <!-- SCREEN SHARE REQUEST OVERLAY -->
-    <div class="ring-overlay" id="screenshare-request-overlay">
-      <div style="text-align: center;">
-        <div style="font-weight: 600; font-size: 1.2rem; color:#fff; margin-bottom: 4px;">Screen Share Request</div>
-        <div style="font-size: 0.85rem; color:#aaa;">Admin wants to view your screen</div>
-      </div>
-      <div style="display: flex; gap: 12px; width: 100%;">
-        <button class="btn" style="flex: 1; background:#ff3b30;" onclick="rejectScreenShare()">Decline</button>
-        <button class="btn" style="flex: 1; background:#0a84ff;" onclick="acceptScreenShare()">Share</button>
-      </div>
-    </div>
-
     <div class="chat-drawer" id="chat-drawer">
-      <!-- FRIEND HEADER (ADMIN CONTROLLED VISIBILITY) -->
       <div class="chat-header" id="friend-header-box">
         <div class="header-user">
           <div class="header-avatar"><i data-lucide="shield-check" style="width: 24px; height: 24px;"></i></div>
@@ -227,27 +253,13 @@
         </div>
       </div>
 
-      <div class="emoji-picker" id="emoji-picker">
-        <span onclick="addEmoji('😊')">😊</span><span onclick="addEmoji('❤️')">❤️</span>
-        <span onclick="addEmoji('💕')">💕</span><span onclick="addEmoji('💖')">💖</span>
-        <span onclick="addEmoji('😘')">😘</span><span onclick="addEmoji('🥰')">🥰</span>
-        <span onclick="addEmoji('🔥')">🔥</span><span onclick="addEmoji('🌹')">🌹</span>
-        <span onclick="addEmoji('🥺')">🥺</span><span onclick="addEmoji('💋')">💋</span>
-        <span onclick="addEmoji('✨')">✨</span><span onclick="addEmoji('😂')">😂</span>
-        <span onclick="addEmoji('👍')">👍</span><span onclick="addEmoji('🎉')">🎉</span>
-        <span onclick="addEmoji('😎')">😎</span><span onclick="addEmoji('👋')">👋</span>
-      </div>
-
       <div id="messages" class="messages"></div>
 
-      <!-- TYPING INDICATOR BOX -->
-      <div id="typing-indicator-box"><i data-lucide="edit-2" style="width:14px;"></i> Friend is typing: <span id="typing-preview-text" style="color: #fff; font-weight: 500;"></span></div>
+      <div id="typing-indicator-box"><i data-lucide="edit-2" style="width:14px;"></i> Friend is typing: <span id="typing-preview-text" style="color: #fff; font-weight: 600;"></span></div>
 
       <div id="chat-input-row">
         <div class="action-icon-group">
-          <button id="emoji-toggle-btn" class="action-icon-btn" onclick="toggleEmojiPicker()" style="display:none;"><i data-lucide="smile" style="width:20px;"></i></button>
-          <label class="action-icon-btn" title="Attach File" aria-label="Attach File"><i data-lucide="paperclip" style="width:20px;"></i><input type="file" style="display:none;" onchange="sendFile(this)"></label>
-          
+          <label class="action-icon-btn" title="Attach File"><i data-lucide="paperclip" style="width:20px;"></i><input type="file" style="display:none;" onchange="sendFile(this)"></label>
           <div id="friend-call-buttons">
             <button class="action-icon-btn call-btn" onclick="dialVoiceCall()" title="Voice Call"><i data-lucide="phone" style="width:18px;"></i></button>
             <button class="action-icon-btn call-btn" onclick="dialVideoCall()" title="Video Call"><i data-lucide="video" style="width:20px;"></i></button>
@@ -255,11 +267,10 @@
         </div>
         
         <div class="input-wrapper">
-          <!-- FRIEND TYPING TO ADMIN (ADMIN ONLY VISIBILITY) -->
           <textarea id="chat-input" rows="1" placeholder="Message..." onkeydown="handleKeyInput(event)" oninput="handleFriendTyping(); this.style.height='auto';this.style.height=Math.min(this.scrollHeight, 120)+'px'"></textarea>
         </div>
         
-        <button id="send-btn-icon" class="send-btn" onclick="sendMessage()" aria-label="Send Message"><i data-lucide="send" style="width:20px; margin-left:-2px;"></i></button>
+        <button id="send-btn-icon" class="send-btn" onclick="sendMessage()"><i data-lucide="send" style="width:18px;"></i></button>
       </div>
     </div>
   </div>
@@ -270,25 +281,30 @@
     const ADMIN_ID = "TECHINFRA_ADMIN_V1"; 
     
     let peer = null, localStream = null, activeConn = null, incomingCallObj = null, activeCallRef = null;
-    let friendScreenStream = null, friendScreenCall = null;
-    let activeDestructTimer = 0, isOneWayVoiceActive = false, ringtoneTimer = null, idleTimer = null;
-    let isMoreSecuredMode = false, isTouchToSeeMode = false, isReadReceiptsEnabled = false;
-
+    let activeDestructTimer = 0, ringtoneTimer = null;
     let currentCallType = 'voice', callDurationTimer = null, callSeconds = 0;
-    let isCallMuted = false, isSpeakerOn = true, isCamOff = false, isLocalVideoHidden = false;
+    let isCallMuted = false, isCamOff = false, isSpeakerOn = true;
     let connectInterval = null;
 
     let heartbeatInterval = null, heartbeatCheckInterval = null, lastPingReceived = 0;
     let activeReactionMsgId = null;
     let isAnsweringCall = false;
 
-    const crystalClearAudioConstraints = { audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true, sampleRate: 48000 } };
-    const peerConfig = { host: 'teams-6yw1.onrender.com', port: 443, path: '/', secure: true, config: { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }, { urls: 'stun:stun1.l.google.com:19302' }] } };
+    const voiceOnlyConstraints = { video: false, audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true } };
+    const videoCallConstraints = { video: { width: { ideal: 1280 }, height: { ideal: 720 }, facingMode: "user" }, audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true } };
 
-    function resetIdleTimer() { document.body.classList.remove('screen-sleeping'); if (idleTimer) clearTimeout(idleTimer); idleTimer = setTimeout(() => { if (activeCallRef || document.getElementById('remote-video').style.display === 'block') { document.body.classList.add('screen-sleeping'); } }, 45000); }
-    function wakeUpScreen() { document.body.classList.remove('screen-sleeping'); resetIdleTimer(); }
-    ['mousemove', 'touchstart', 'keydown', 'scroll'].forEach(evt => { window.addEventListener(evt, resetIdleTimer, { passive: true }); });
-    document.addEventListener("visibilitychange", () => { if (document.hidden && localStream) localStream.getAudioTracks().forEach(t => t.enabled = false); else if (!document.hidden && localStream) localStream.getAudioTracks().forEach(t => t.enabled = true); });
+    // HIGH-AVAILABILITY MULTI-STUN WEBRTC CONFIG FOR CROSS-PLATFORM MOBILES
+    const peerConfig = { 
+      host: 'teams-6yw1.onrender.com', port: 443, path: '/', secure: true, 
+      config: { 
+        iceServers: [
+          { urls: 'stun:stun.l.google.com:19302' },
+          { urls: 'stun:stun1.l.google.com:19302' },
+          { urls: 'stun:stun2.l.google.com:19302' },
+          { urls: 'stun:global.stun.twilio.com:3478' }
+        ] 
+      } 
+    };
 
     let audioCtx = null;
     function getAudioContext() { if (!audioCtx) { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } if (audioCtx.state === 'suspended') { audioCtx.resume(); } return audioCtx; }
@@ -298,14 +314,6 @@
     function startInternalRingtone() { stopInternalRingtone(); playInternalRingNote(); ringtoneTimer = setInterval(playInternalRingNote, 2000); }
     function stopInternalRingtone() { if (ringtoneTimer) { clearInterval(ringtoneTimer); ringtoneTimer = null; } }
 
-    document.addEventListener('touchstart', () => { document.body.classList.add('user-touching'); }); document.addEventListener('touchend', () => { document.body.classList.remove('user-touching'); }); document.addEventListener('touchcancel', () => { document.body.classList.remove('user-touching'); }); document.addEventListener('mousedown', () => { document.body.classList.add('user-touching'); }); document.addEventListener('mouseup', () => { document.body.classList.remove('user-touching'); });
-
-    const shield = document.getElementById('screenshot-shield');
-    function triggerAntiScreenshotEviction() { shield.style.display = 'block'; setTimeout(() => { executeEmergencyPurge(); }, 50); }
-    window.addEventListener('keyup', (e) => { if (e.key === 'PrintScreen') triggerAntiScreenshotEviction(); });
-    window.addEventListener('blur', () => { if (isMoreSecuredMode && document.getElementById('app-container').style.display === 'flex') { triggerAntiScreenshotEviction(); } });
-
-    function executeEmergencyPurge() { const msgs = document.getElementById('messages'); if (msgs) msgs.innerHTML = ''; sessionStorage.clear(); localStorage.clear(); window.location.replace("https://www.google.com"); }
     function getTimeStamp() { const now = new Date(); return now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }); }
     function handleKeyInput(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } }
 
@@ -315,7 +323,6 @@
       else { document.getElementById('google-search-input').value = ''; }
     }
 
-    // --- REACTIONS & EDIT UI ---
     function openReactionBar(msgId, e) {
       e.stopPropagation(); activeReactionMsgId = msgId;
       const bar = document.getElementById('reaction-bar'); bar.style.display = 'flex';
@@ -328,8 +335,7 @@
       e.stopPropagation(); if(!activeReactionMsgId) return;
       applyReaction(activeReactionMsgId, emoji);
       const payload = { type: 'reaction', msgId: activeReactionMsgId, emoji: emoji };
-      if (activeConn && activeConn.open) { activeConn.send(payload); } 
-      else { let ob = JSON.parse(localStorage.getItem('sqa_outbox') || '[]'); ob.push(payload); localStorage.setItem('sqa_outbox', JSON.stringify(ob)); }
+      if (activeConn && activeConn.open) { activeConn.send(payload); }
       closeReactionBar();
     }
     function applyReaction(msgId, emoji) {
@@ -349,95 +355,137 @@
         let newText = prompt("Edit your message:", oldText);
         if (newText !== null && newText.trim() !== "") {
           updateEditedMessage(msgId, newText, true);
-          if (activeConn && activeConn.open) {
-            activeConn.send({ type: 'edit_msg', msgId: msgId, text: newText });
-          }
+          if (activeConn && activeConn.open) { activeConn.send({ type: 'edit_msg', msgId: msgId, text: newText }); }
         }
-      } else {
-        openReactionBar(msgId, e);
-      }
+      } else { openReactionBar(msgId, e); }
     }
     function updateEditedMessage(msgId, newText, isMe) {
-      let msgDiv = document.getElementById(msgId);
-      if (!msgDiv) return;
+      let msgDiv = document.getElementById(msgId); if (!msgDiv) return;
       let textSpan = msgDiv.querySelector('.msg-text');
       if (textSpan) {
         textSpan.innerText = newText;
         let editedTag = msgDiv.querySelector('.edited-tag');
         if (!editedTag) {
           let meta = msgDiv.querySelector('.msg-meta');
-          let tag = document.createElement('span');
-          tag.className = 'edited-tag';
-          tag.style.cssText = "font-size:0.65rem; opacity:0.6; margin-right:4px;";
-          tag.innerText = "(edited)";
+          let tag = document.createElement('span'); tag.className = 'edited-tag'; tag.style.cssText = "font-size:0.65rem; opacity:0.6; margin-right:4px;"; tag.innerText = "(edited)";
           meta.insertBefore(tag, meta.firstChild);
         }
       }
     }
 
     function handleFriendTyping() { const val = document.getElementById('chat-input').value; if (activeConn && activeConn.open) { activeConn.send({ type: 'typing_preview', text: val }); } }
-    
-    let tapCount = 0, tapTimer = null; document.addEventListener('touchstart', (e) => { if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'BUTTON' || e.target.closest('button')) return; tapCount++; if (tapCount === 1) tapTimer = setTimeout(() => { tapCount = 0; }, 600); if (tapCount === 3) { clearTimeout(tapTimer); tapCount = 0; executeEmergencyPurge(); } });
-    function sendOfflineEmailNotification(payload) { try { emailjs.send('YOUR_SERVICE_ID', 'YOUR_TEMPLATE_ID', { to_email: 'zudiocharm@gmail.com', from_name: 'SQA Friend User', message: payload.summary || 'Friend sent content or tried to call while Admin was offline.', timestamp: new Date().toLocaleString() }); } catch(e) {} }
 
-    function toggleTeamsMic() { if (!localStream) return; isCallMuted = !isCallMuted; localStream.getAudioTracks().forEach(t => t.enabled = !isCallMuted); document.getElementById('call-mic-btn').style.background = isCallMuted ? "#ff3b30" : "rgba(255,255,255,0.1)"; document.getElementById('call-mic-btn').innerHTML = isCallMuted ? `<i data-lucide="mic-off"></i>` : `<i data-lucide="mic"></i>`; lucide.createIcons(); }
-    function toggleTeamsCam() { if (!localStream || currentCallType !== 'video') return; isCamOff = !isCamOff; localStream.getVideoTracks().forEach(t => t.enabled = !isCamOff); document.getElementById('call-cam-btn').style.background = isCamOff ? "#ff3b30" : "rgba(255,255,255,0.1)"; document.getElementById('call-cam-btn').innerHTML = isCamOff ? `<i data-lucide="camera-off"></i>` : `<i data-lucide="camera"></i>`; document.getElementById('local-video').style.opacity = isCamOff ? "0" : "1"; lucide.createIcons(); }
-    function toggleTeamsSpeaker() { isSpeakerOn = !isSpeakerOn; document.getElementById('remote-audio').muted = !isSpeakerOn; document.getElementById('call-speaker-btn').style.background = isSpeakerOn ? "rgba(255,255,255,0.1)" : "#ff3b30"; document.getElementById('call-speaker-btn').innerHTML = isSpeakerOn ? `<i data-lucide="volume-2"></i>` : `<i data-lucide="volume-x"></i>`; lucide.createIcons(); }
-    function toggleLocalVideoVisibility() { isLocalVideoHidden = !isLocalVideoHidden; if (isLocalVideoHidden) { document.getElementById('local-video-container').style.display = 'none'; document.getElementById('show-local-video-btn').style.display = 'block'; } else { document.getElementById('local-video-container').style.display = 'block'; document.getElementById('show-local-video-btn').style.display = 'none'; } }
-    function startCallTimer() { callSeconds = 0; if (callDurationTimer) clearInterval(callDurationTimer); document.getElementById('call-duration').innerText = "00:00"; callDurationTimer = setInterval(() => { callSeconds++; const m = String(Math.floor(callSeconds / 60)).padStart(2, '0'); const s = String(callSeconds % 60).padStart(2, '0'); document.getElementById('call-duration').innerText = `${m}:${s}`; }, 1000); }
+    /* MS TEAMS CALL CONTROLS FOR FRIEND */
+    function toggleTeamsMic() {
+      if (!localStream) return; isCallMuted = !isCallMuted;
+      localStream.getAudioTracks().forEach(t => t.enabled = !isCallMuted);
+      const btn = document.getElementById('call-mic-btn');
+      btn.innerHTML = isCallMuted ? `<i data-lucide="mic-off"></i>` : `<i data-lucide="mic"></i>`;
+      document.getElementById('mic-lbl').innerText = isCallMuted ? "Mic Off" : "Mic On";
+      isCallMuted ? btn.classList.add('active-off') : btn.classList.remove('active-off');
+      lucide.createIcons();
+    }
+
+    function toggleTeamsCam() {
+      if (!localStream || currentCallType !== 'video') return; isCamOff = !isCamOff;
+      localStream.getVideoTracks().forEach(t => t.enabled = !isCamOff);
+      const btn = document.getElementById('call-cam-btn');
+      btn.innerHTML = isCamOff ? `<i data-lucide="camera-off"></i>` : `<i data-lucide="camera"></i>`;
+      document.getElementById('cam-lbl').innerText = isCamOff ? "Video Off" : "Video On";
+      document.getElementById('local-video').style.opacity = isCamOff ? "0" : "1";
+      isCamOff ? btn.classList.add('active-off') : btn.classList.remove('active-off');
+      lucide.createIcons();
+    }
+
+    function toggleSpeakerOutput() {
+      isSpeakerOn = !isSpeakerOn;
+      const ra = document.getElementById('remote-audio');
+      if (ra) ra.muted = !isSpeakerOn;
+      const btn = document.getElementById('call-speaker-btn');
+      btn.innerHTML = isSpeakerOn ? `<i data-lucide="volume-2"></i>` : `<i data-lucide="volume-x"></i>`;
+      isSpeakerOn ? btn.classList.remove('active-off') : btn.classList.add('active-off');
+      lucide.createIcons();
+    }
+
+    function toggleLocalVideoVisibility() {
+      const container = document.getElementById('local-video-container');
+      container.style.display = (container.style.display === 'none') ? 'block' : 'none';
+    }
+
+    function startCallTimer() {
+      callSeconds = 0; if (callDurationTimer) clearInterval(callDurationTimer);
+      document.getElementById('call-duration').innerText = "00:00";
+      callDurationTimer = setInterval(() => {
+        callSeconds++;
+        const m = String(Math.floor(callSeconds / 60)).padStart(2, '0');
+        const s = String(callSeconds % 60).padStart(2, '0');
+        document.getElementById('call-duration').innerText = `${m}:${s}`;
+      }, 1000);
+    }
 
     function showCallUI(type, isCaller) {
       document.getElementById('call-ui').style.display = 'flex';
-      if (type === 'video' || type === 'screenshare') { 
-        document.getElementById('remote-video').style.display = 'block'; document.getElementById('audio-only-ui').style.display = 'none'; document.getElementById('local-video-container').style.display = 'block'; document.getElementById('show-local-video-btn').style.display = 'none'; document.getElementById('call-cam-btn').style.display = 'flex'; 
-        if(type === 'screenshare') { document.getElementById('call-ui-title').innerText = "Sharing Screen"; document.getElementById('call-cam-btn').style.display = 'none'; }
-      } 
-      else { 
-        document.getElementById('remote-video').style.display = 'none'; document.getElementById('remote-video').srcObject = null; document.getElementById('audio-only-ui').style.display = 'block'; document.getElementById('local-video-container').style.display = 'none'; document.getElementById('show-local-video-btn').style.display = 'none'; document.getElementById('call-cam-btn').style.display = 'none'; document.getElementById('call-ui-title').innerText = isCaller ? "Calling..." : "Audio Call"; 
+      const audioStage = document.getElementById('audio-only-ui');
+      const remoteVideo = document.getElementById('remote-video');
+      const localContainer = document.getElementById('local-video-container');
+
+      if (type === 'video') {
+        remoteVideo.style.display = 'block'; audioStage.style.display = 'none'; localContainer.style.display = 'block';
+        document.getElementById('cam-lbl').innerText = "Video On";
+        document.getElementById('call-cam-btn').classList.remove('active-off');
+        document.getElementById('call-cam-btn').innerHTML = `<i data-lucide="camera"></i>`;
+      } else {
+        remoteVideo.style.display = 'none'; audioStage.style.display = 'flex'; localContainer.style.display = 'none';
+        document.getElementById('cam-lbl').innerText = "Video Off";
+        document.getElementById('call-cam-btn').classList.add('active-off');
+        document.getElementById('call-cam-btn').innerHTML = `<i data-lucide="camera-off"></i>`;
       }
-      isCallMuted = false; isSpeakerOn = true; isCamOff = false; isLocalVideoHidden = false;
-      document.getElementById('call-mic-btn').style.background = 'rgba(255,255,255,0.1)'; document.getElementById('call-mic-btn').innerHTML = `<i data-lucide="mic"></i>`; document.getElementById('call-speaker-btn').style.background = 'rgba(255,255,255,0.1)'; document.getElementById('call-speaker-btn').innerHTML = `<i data-lucide="volume-2"></i>`; document.getElementById('call-cam-btn').style.background = 'rgba(255,255,255,0.1)'; document.getElementById('call-cam-btn').innerHTML = `<i data-lucide="camera"></i>`; document.getElementById('local-video').style.opacity = "1"; lucide.createIcons();
+      
+      document.getElementById('call-ui-subtext').innerText = isCaller ? "Calling..." : "Connecting...";
+      isCallMuted = false; isCamOff = (type !== 'video');
+      lucide.createIcons();
+    }
+
+    function dialVoiceCall() {
+      if (!activeConn || !activeConn.open) return alert('Offline!');
+      currentCallType = 'voice'; getAudioContext();
+      navigator.mediaDevices.getUserMedia(voiceOnlyConstraints).then(stream => {
+        localStream = stream;
+        activeCallRef = peer.call(ADMIN_ID, localStream, { metadata: { type: 'voice' } }); 
+        setupCallHandlers(activeCallRef, 'voice'); showCallUI('voice', true);
+      }).catch(err => { alert("Microphone access required."); });
+    }
+
+    function dialVideoCall() {
+      if (!activeConn || !activeConn.open) return alert('Offline!');
+      currentCallType = 'video'; getAudioContext();
+      navigator.mediaDevices.getUserMedia(videoCallConstraints).then(stream => {
+        localStream = stream; document.getElementById('local-video').srcObject = stream;
+        activeCallRef = peer.call(ADMIN_ID, localStream, { metadata: { type: 'video' } }); 
+        setupCallHandlers(activeCallRef, 'video'); showCallUI('video', true);
+      }).catch(err => { alert("Camera access required."); });
     }
 
     function setupCallHandlers(callObj, type) {
       callObj.on('stream', remoteStream => {
-        const rv = document.getElementById('remote-video');
+        const rv = document.getElementById('remote-video'); 
         const ra = document.getElementById('remote-audio');
         
-        if (type === 'video' || type === 'screenshare') { 
-          rv.srcObject = remoteStream;
-          rv.muted = true; 
-          rv.play().catch(e=>{});
-        } 
-        else { 
-          rv.srcObject = null;
-        }
-
-        ra.srcObject = remoteStream;
-        ra.muted = !isSpeakerOn;
-        ra.play().catch(e=>{});
-
-        if (document.getElementById('call-ui-title').innerText.includes("Calling")) { 
-            document.getElementById('call-ui-title').innerText = (type === 'video') ? "Video Call" : "Audio Call"; 
-        }
+        if (type === 'video') { 
+          rv.srcObject = remoteStream; rv.muted = true; rv.play().catch(e=>{});
+          rv.style.display = 'block'; document.getElementById('audio-only-ui').style.display = 'none';
+        } else { rv.srcObject = null; }
+        
+        ra.srcObject = remoteStream; ra.muted = false; ra.play().catch(e=>{});
+        document.getElementById('call-ui-subtext').innerText = "Connected";
         startCallTimer();
       });
       callObj.on('close', endTeamsCall); callObj.on('error', endTeamsCall);
     }
 
-    function acceptScreenShare() {
-      stopInternalRingtone(); document.getElementById('screenshare-request-overlay').style.display = 'none';
-      if (!navigator.mediaDevices || !navigator.mediaDevices.getDisplayMedia) { alert("Android mobile browsers do not support web screen casting."); if (activeConn && activeConn.open) activeConn.send({ type: 'msg', text: 'Android blocked screen share.' }); return; }
-      navigator.mediaDevices.getDisplayMedia({ video: true }).then(stream => {
-        friendScreenStream = stream; friendScreenCall = peer.call(ADMIN_ID, stream, { metadata: { type: 'friend_screenshare' } });
-        showCallUI('screenshare', false); stream.getVideoTracks()[0].onended = () => { endTeamsCall(); };
-      }).catch(err => { alert("Screen share cancelled."); if (activeConn && activeConn.open) activeConn.send({ type: 'msg', text: 'Denied screen share.' }); });
-    }
-
-    function rejectScreenShare() { stopInternalRingtone(); document.getElementById('screenshare-request-overlay').style.display = 'none'; if (activeConn && activeConn.open) activeConn.send({ type: 'msg', text: 'Denied screen share.' }); }
-
     function acceptCall() {
-      stopInternalRingtone(); document.getElementById('ring-overlay').style.display = 'none';
+      getAudioContext(); stopInternalRingtone();
+      document.getElementById('ring-overlay').style.display = 'none';
       isAnsweringCall = true;
       const constraints = currentCallType === 'video' ? videoCallConstraints : voiceOnlyConstraints;
       navigator.mediaDevices.getUserMedia(constraints).then(stream => { 
@@ -449,34 +497,33 @@
           setupCallHandlers(incomingCallObj, currentCallType); 
           isAnsweringCall = false;
         } 
-      }).catch(err => { alert("Permission denied."); rejectCall(); });
+      }).catch(err => { alert("Permissions denied."); rejectCall(); });
     }
 
-    function rejectCall() { stopInternalRingtone(); document.getElementById('ring-overlay').style.display = 'none'; isAnsweringCall = false; if (incomingCallObj) { incomingCallObj.close(); incomingCallObj = null; } if (activeConn && activeConn.open) { activeConn.send({ type: 'call_failed_ack' }); } }
+    function rejectCall() { stopInternalRingtone(); document.getElementById('ring-overlay').style.display = 'none'; isAnsweringCall = false; if (incomingCallObj) { incomingCallObj.close(); incomingCallObj = null; } }
 
     function endTeamsCall() {
-      if (activeCallRef) { activeCallRef.close(); activeCallRef = null; } if (incomingCallObj) { incomingCallObj.close(); incomingCallObj = null; } if (localStream) { localStream.getTracks().forEach(t => t.stop()); localStream = null; }
-      if (friendScreenStream) { friendScreenStream.getTracks().forEach(t => t.stop()); friendScreenStream = null; } if (friendScreenCall) { friendScreenCall.close(); friendScreenCall = null; }
-      
-      document.getElementById('call-ui').style.display = 'none'; 
+      if (activeCallRef) { activeCallRef.close(); activeCallRef = null; }
+      if (incomingCallObj) { incomingCallObj.close(); incomingCallObj = null; }
+      if (localStream) { localStream.getTracks().forEach(t => t.stop()); localStream = null; }
+      document.getElementById('call-ui').style.display = 'none';
       document.getElementById('remote-video').srcObject = null; document.getElementById('remote-audio').srcObject = null; document.getElementById('local-video').srcObject = null;
-      
-      if(callDurationTimer) clearInterval(callDurationTimer); if(activeConn && activeConn.open) activeConn.send({ type: 'end_call' });
+      if(callDurationTimer) clearInterval(callDurationTimer);
+      if(activeConn && activeConn.open) activeConn.send({ type: 'end_call' });
+      isAnsweringCall = false;
     }
 
     function initFriendSession() {
-      if (peer) peer.destroy();
-      peer = new Peer(peerConfig);
+      if (peer) peer.destroy(); peer = new Peer(peerConfig);
       peer.on('open', () => { updateConnectionStatus(false); startPollingAdmin(); });
       peer.on('error', (err) => { setTimeout(initFriendSession, 2000); });
       peer.on('connection', incoming => { setupConnection(incoming); });
+      
+      // DIRECT WEBRTC CALL HANDSHAKE FOR FRIEND PAGE
       peer.on('call', call => {
-        incomingCallObj = call; activeCallRef = call; currentCallType = (call.metadata && call.metadata.type) ? call.metadata.type : 'video';
-        
+        incomingCallObj = call; activeCallRef = call; currentCallType = (call.metadata && call.metadata.type) ? call.metadata.type : 'voice';
         if (isAnsweringCall && localStream) {
-          call.answer(localStream);
-          setupCallHandlers(call, currentCallType);
-          isAnsweringCall = false;
+          call.answer(localStream); setupCallHandlers(call, currentCallType); isAnsweringCall = false;
         } else {
           document.getElementById('ring-title').innerText = "Incoming " + (currentCallType === 'video' ? 'Video' : 'Audio') + " Call"; 
           document.getElementById('ring-overlay').style.display = 'flex'; startInternalRingtone();
@@ -490,122 +537,54 @@
       ping(); connectInterval = setInterval(ping, 3500);
     }
 
-    function flushFriendOutbox() { 
-      let outbox = JSON.parse(localStorage.getItem('sqa_outbox') || '[]'); 
-      if (outbox.length > 0 && activeConn && activeConn.open) { 
-        outbox.forEach(item => { activeConn.send(item); }); 
-        localStorage.removeItem('sqa_outbox'); 
-      } 
-    }
-
     function setupConnection(conn) {
-      if (activeConn && activeConn.connectionId !== conn.connectionId) { activeConn.close(); }
-      activeConn = conn;
+      if (activeConn && activeConn.connectionId !== conn.connectionId) { activeConn.close(); } activeConn = conn;
       
-      const onReady = () => { 
-        updateConnectionStatus(true); 
-        setTimeout(flushFriendOutbox, 1000); 
-        
-        lastPingReceived = Date.now();
-        if(heartbeatInterval) clearInterval(heartbeatInterval);
-        if(heartbeatCheckInterval) clearInterval(heartbeatCheckInterval);
-        
-        heartbeatInterval = setInterval(() => { if(activeConn && activeConn.open) activeConn.send({ type: 'ping' }); }, 3000);
-        heartbeatCheckInterval = setInterval(() => {
-          if(activeConn && activeConn.open && (Date.now() - lastPingReceived > 12000)) { activeConn.close(); onDisconnect(); }
-        }, 4000);
-      };
-      
+      const onReady = () => { updateConnectionStatus(true); };
       if (conn.open) onReady(); else conn.on('open', onReady);
 
       conn.on('data', data => {
         if (typeof data === 'object') {
-          if (data.type === 'ping') { lastPingReceived = Date.now(); return; } 
           if (data.type === 'clear') { document.getElementById('messages').innerHTML = ''; }
-          else if (data.type === 'req_offline') { setTimeout(flushFriendOutbox, 1000); }
-          else if (data.type === 'incoming_call') { currentCallType = data.callType || 'video'; document.getElementById('ring-title').innerText = "Incoming " + (currentCallType === 'video' ? 'Video' : 'Voice') + " Call"; document.getElementById('ring-overlay').style.display = 'flex'; startInternalRingtone(); }
           else if (data.type === 'end_call') { endTeamsCall(); }
-          else if (data.type === 'msg_ack') { updateMessageTicks(data.msgId, data.status); }
           else if (data.type === 'reaction') { applyReaction(data.msgId, data.emoji); }
           else if (data.type === 'edit_msg') { updateEditedMessage(data.msgId, data.text, false); }
-          else if (data.type === 'call_failed') { addMessage("Call Failed", false, activeDestructTimer, getTimeStamp(), 'call_fail_' + Date.now()); }
           else if (data.type === 'cmd') { handleAdminCommand(data.command, data.value); }
-          else if (data.type === 'typing_preview') { 
-            const tb = document.getElementById('typing-indicator-box'); 
-            const pt = document.getElementById('typing-preview-text'); 
-            if (data.text && data.text.length > 0) { tb.style.display = 'flex'; pt.innerText = data.text; } 
-            else { tb.style.display = 'none'; pt.innerText = ''; } 
-          }
-          else if (data.type === 'file') { 
-            playMessageAlertSound(); 
-            renderFileMessage(data, false, activeDestructTimer); 
-          }
+          else if (data.type === 'file') { playMessageAlertSound(); renderFileMessage(data, false); }
           else if (data.type === 'msg') {
-            document.getElementById('typing-indicator-box').style.display = 'none'; 
-            playMessageAlertSound();
-            if (data.destruct !== undefined) applyDestructToExisting(data.destruct);
-            addMessage(data.text, false, activeDestructTimer, data.time || getTimeStamp(), data.id);
-            activeConn.send({ type: 'msg_ack', msgId: data.id, status: 'delivered' });
-            setTimeout(() => { if (activeConn && activeConn.open) { activeConn.send({ type: 'msg_ack', msgId: data.id, status: 'read' }); } }, 400);
+            document.getElementById('typing-indicator-box').style.display = 'none'; playMessageAlertSound();
+            addMessage(data.text, false, data.time || getTimeStamp(), data.id);
           }
-        } else { 
-          playMessageAlertSound(); 
-          addMessage(data, false, activeDestructTimer, getTimeStamp()); 
-        }
+        } else { playMessageAlertSound(); addMessage(data, false, getTimeStamp()); }
       });
       
-      const onDisconnect = () => { 
-        if(heartbeatInterval) clearInterval(heartbeatInterval); if(heartbeatCheckInterval) clearInterval(heartbeatCheckInterval);
-        activeConn = null; updateConnectionStatus(false); 
-      };
+      const onDisconnect = () => { activeConn = null; updateConnectionStatus(false); };
       conn.on('close', onDisconnect); conn.on('error', onDisconnect);
     }
 
     function updateConnectionStatus(isOnline) {
       const sendBtn = document.getElementById('send-btn-icon');
-      if (isOnline) {
-        sendBtn.classList.add('online');
-      } else {
-        sendBtn.classList.remove('online');
-      }
+      if (isOnline) { sendBtn.classList.add('online'); } else { sendBtn.classList.remove('online'); }
     }
 
     function handleAdminCommand(cmd, val) {
-      if (cmd === 'start_screenshare') { document.getElementById('screenshare-request-overlay').style.display = 'flex'; startInternalRingtone(); } 
-      else if (cmd === 'stop_screenshare') { endTeamsCall(); } 
-      else if (cmd === 'stop_admin_screenshare') { document.getElementById('remote-video').srcObject = null; document.getElementById('remote-video').style.display = 'none'; } 
-      else if (cmd === 'start_oneway_voice') { isOneWayVoiceActive = true; } else if (cmd === 'stop_oneway_voice') { isOneWayVoiceActive = false; endTeamsCall(); } 
-      else if (cmd === 'set_destruct') { applyDestructToExisting(val || 0); } 
-      else if (cmd === 'set_more_secured') { isMoreSecuredMode = !!val; } else if (cmd === 'set_touch_to_see') { isTouchToSeeMode = !!val; if (isTouchToSeeMode) document.body.classList.add('touch-to-see-active'); else document.body.classList.remove('touch-to-see-active'); } 
-      else if (cmd === 'set_read_receipts') { isReadReceiptsEnabled = !!val; } 
-      else if (cmd === 'set_smiley') { const btn = document.getElementById('emoji-toggle-btn'); if (val) btn.style.display = 'flex'; else { btn.style.display = 'none'; document.getElementById('emoji-picker').style.display = 'none'; } }
-      else if (cmd === 'set_friend_call_access') { const callBtns = document.getElementById('friend-call-buttons'); if(val) callBtns.style.display = 'flex'; else callBtns.style.display = 'none'; }
-      else if (cmd === 'set_header_visibility') {
+      if (cmd === 'set_header_visibility') {
         const headerBox = document.getElementById('friend-header-box');
         if (val) headerBox.style.display = 'flex'; else headerBox.style.display = 'none';
       }
+      else if (cmd === 'set_friend_call_access') {
+        const callBtns = document.getElementById('friend-call-buttons');
+        if(val) callBtns.style.display = 'flex'; else callBtns.style.display = 'none';
+      }
     }
 
-    function applyDestructToExisting(sec) { activeDestructTimer = sec; if (sec > 0) { document.querySelectorAll('#messages .msg').forEach(msgDiv => { if (!msgDiv.dataset.destructing) { msgDiv.dataset.destructing = "true"; setTimeout(() => { msgDiv.remove(); }, sec * 1000); } }); } }
-    
-    function renderFileMessage(fileObj, isMe, destructSecs) { const timeStr = fileObj.time || getTimeStamp(); const div = document.createElement('div'); div.className = 'msg ' + (isMe ? 'me' : ''); div.setAttribute('onclick', `handleMessageClick('${fileObj.id || 'msg_f_'+Date.now()}', ${isMe}, event)`); div.id = fileObj.id || 'msg_f_'+Date.now(); let contentHTML = `<div style="font-size:0.8rem; font-weight:600; margin-bottom:4px; display:flex; align-items:center; gap:6px;"><i data-lucide="paperclip" style="width:14px;"></i> ${fileObj.name}</div>`; if (fileObj.mime.startsWith('image/')) contentHTML += `<img src="${fileObj.data}" alt="attachment" />`; else if (fileObj.mime.startsWith('video/')) contentHTML += `<video src="${fileObj.data}" controls></video>`; contentHTML += `<a href="${fileObj.data}" download="${fileObj.name}" style="color:#30d158; font-size:0.75rem; display:block; margin-top:8px; text-decoration:none; font-weight:600;"><i data-lucide="download" style="width:14px; vertical-align:middle;"></i> Download</a><div class="msg-meta"><span class="msg-time">${timeStr}</span></div>`; div.innerHTML = contentHTML; const box = document.getElementById('messages'); box.appendChild(div); box.scrollTop = box.scrollHeight; lucide.createIcons(); if (destructSecs > 0) { div.dataset.destructing = "true"; setTimeout(() => div.remove(), destructSecs * 1000); } }
-
-    function toggleEmojiPicker() { const picker = document.getElementById('emoji-picker'); picker.style.display = picker.style.display === 'flex' ? 'none' : 'flex'; }
-    function addEmoji(e) { const input = document.getElementById('chat-input'); input.value += e; input.focus(); }
-    
     function sendFile(input) { 
       const file = input.files[0]; if (!file) return; 
-      const reader = new FileReader(); 
-      reader.onload = function(e) { 
+      const reader = new FileReader(); reader.onload = function(e) { 
         const msgId = 'msg_f_' + Date.now();
         const fileData = { type: 'file', name: file.name, mime: file.type, data: e.target.result, time: getTimeStamp(), id: msgId }; 
-        if (activeConn && activeConn.open) { 
-          activeConn.send(fileData); 
-        } else { 
-          storeInFriendOutbox(fileData); 
-        } 
-        renderFileMessage(fileData, true, activeDestructTimer); 
-        input.value = ''; 
+        if (activeConn && activeConn.open) { activeConn.send(fileData); } 
+        renderFileMessage(fileData, true); input.value = ''; 
       }; 
       reader.readAsDataURL(file); 
     }
@@ -613,30 +592,18 @@
     function sendMessage() {
       const input = document.getElementById('chat-input'); const rawMsg = input.value.trim(); if (!rawMsg) return;
       if (activeConn && activeConn.open) { activeConn.send({ type: 'typing_preview', text: '' }); }
-      const currentTime = getTimeStamp(); const msgId = 'msg_' + Date.now(); const msgPayload = { type: 'msg', text: rawMsg, destruct: activeDestructTimer, time: currentTime, id: msgId };
-      if (activeConn && activeConn.open) { 
-        activeConn.send(msgPayload); 
-      } else { 
-        storeInFriendOutbox(msgPayload); 
-        sendOfflineEmailNotification({ summary: `New Message: "${rawMsg}"` }); 
-      }
-      addMessage(rawMsg, true, activeDestructTimer, currentTime, msgId); 
-      input.value = ''; 
-      input.style.height = 'auto';
+      const currentTime = getTimeStamp(); const msgId = 'msg_' + Date.now(); const msgPayload = { type: 'msg', text: rawMsg, time: currentTime, id: msgId };
+      if (activeConn && activeConn.open) { activeConn.send(msgPayload); }
+      addMessage(rawMsg, true, currentTime, msgId); input.value = ''; input.style.height = 'auto';
     }
 
-    function addMessage(msg, isMe, selfDestructSecs, timeStr, msgId) { 
+    function addMessage(msg, isMe, timeStr, msgId) { 
       const t = timeStr || getTimeStamp(); const div = document.createElement('div'); div.className = 'msg ' + (isMe ? 'me' : ''); 
       if (msgId) { div.id = msgId; div.setAttribute('onclick', `handleMessageClick('${msgId}', ${isMe}, event)`); }
-      let metaHTML = `<div class="msg-meta"><span class="msg-time">${t}</span>`; 
-      if (isMe && isReadReceiptsEnabled) { metaHTML += `<span class="tick-icon" id="tick_${msgId}"><i data-lucide="check" style="width:12px;"></i></span>`; } metaHTML += `</div>`; 
-      div.innerHTML = `<span class="msg-text">${msg}</span>` + metaHTML; const box = document.getElementById('messages'); box.appendChild(div); box.scrollTop = box.scrollHeight; lucide.createIcons(); 
-      if (selfDestructSecs > 0) { div.dataset.destructing = "true"; setTimeout(() => { div.remove(); }, selfDestructSecs * 1000); } 
+      let metaHTML = `<div class="msg-meta"><span class="msg-time">${t}</span></div>`; 
+      div.innerHTML = `<span class="msg-text">${msg}</span>` + metaHTML; 
+      const box = document.getElementById('messages'); box.appendChild(div); box.scrollTop = box.scrollHeight; lucide.createIcons(); 
     }
-    
-    function updateMessageTicks(msgId, status) { const tickSpan = document.getElementById(`tick_${msgId}`); if (!tickSpan) return; if (status === 'delivered') { tickSpan.innerText = '✓✓'; } else if (status === 'read') { tickSpan.innerText = '✓✓'; tickSpan.classList.add('blue'); } }
-
-    const dragCard = document.getElementById('local-video-container'); let active = false, currentX=0, currentY=0, initialX, initialY, xOffset = 0, yOffset = 0; const startDrag = (e) => { initialX = (e.touches ? e.touches[0].clientX : e.clientX) - xOffset; initialY = (e.touches ? e.touches[0].clientY : e.clientY) - yOffset; active = true; }; const endDrag = () => { initialX = currentX; initialY = currentY; active = false; }; const doDrag = (e) => { if (active) { e.preventDefault(); currentX = (e.touches ? e.touches[0].clientX : e.clientX) - initialX; currentY = (e.touches ? e.touches[0].clientY : e.clientY) - initialY; xOffset = currentX; yOffset = currentY; dragCard.style.transform = `translate3d(${currentX}px, ${currentY}px, 0)`; } }; dragCard.addEventListener("touchstart", startDrag, {passive: false}); dragCard.addEventListener("touchend", endDrag); dragCard.addEventListener("touchmove", doDrag, {passive: false}); dragCard.addEventListener("mousedown", startDrag); window.addEventListener("mouseup", endDrag); window.addEventListener("mousemove", doDrag); lucide.createIcons();
   </script>
 </body>
 </html>
