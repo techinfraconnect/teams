@@ -12,7 +12,9 @@
 
     #app-container { position: relative; width: 100%; height: 100%; background: radial-gradient(circle at 50% 20%, #161622 0%, #08080c 100%); display: flex; flex-direction: column; }
 
-    /* --- REVERTED ADMIN HEADER WITH SQA FRIEND & STATUS --- */
+    /* --- CHAT DRAWER & HEADER (HIDDEN UNTIL LOGIN) --- */
+    .chat-drawer { position: relative; width: 100%; height: 100%; background: transparent; z-index: 12; display: none; flex-direction: column; padding-bottom: max(16px, env(safe-area-inset-bottom)); }
+    
     .chat-header {
       display: flex; align-items: center; justify-content: space-between;
       padding: 12px 16px; background: rgba(20, 20, 30, 0.85);
@@ -56,6 +58,7 @@
     .settings-btn { background: rgba(255, 255, 255, 0.1); color: #fff; min-height: 38px; min-width: 38px; border-radius: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; border: none; touch-action: manipulation; transition: 0.2s; }
     .settings-btn:active { transform: scale(0.9); background: rgba(255,255,255,0.25); }
 
+    /* --- FULL SCREEN CALL UI --- */
     #call-ui { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: radial-gradient(circle at 50% 20%, #1c1c2e 0%, #08080c 100%); z-index: 9000; flex-direction: column; overflow: hidden; padding-top: max(20px, env(safe-area-inset-top)); padding-bottom: max(20px, env(safe-area-inset-bottom)); }
     #remote-video { width: 100%; height: 100%; object-fit: cover; display: none; }
     #audio-only-ui { display: none; position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%); text-align: center; color: #fff; width: 100%; }
@@ -65,13 +68,14 @@
     #local-video-container { position: absolute; top: max(40px, env(safe-area-inset-top)); right: 20px; width: 110px; height: 160px; border-radius: 16px; overflow: hidden; z-index: 9010; box-shadow: 0 20px 50px rgba(0,0,0,0.8); border: 1px solid rgba(255,255,255,0.15); background: #000; display: none; cursor: grab; touch-action: none; }
     #local-video-container:active { cursor: grabbing; }
     #local-video { width: 100%; height: 100%; object-fit: cover; }
-    #hide-video-btn { position: absolute; top: 6px; right: 6px; background: rgba(0,0,0,0.5); color: #fff; border: none; border-radius: 50%; width: 32px; height: 32px; cursor: pointer; backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; touch-action: manipulation; }
+    #hide-video-btn { position: absolute; top: 6px; right: 6px; background: rgba(0,0,0,0.5); color: #fff; border: none; border-radius: 50%; width: 32px; height: 32px; font-size: 14px; cursor: pointer; backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; touch-action: manipulation; }
     #show-local-video-btn { display: none; position: absolute; top: max(40px, env(safe-area-inset-top)); right: 20px; z-index: 9015; background: rgba(30,30,45,0.8); color: #fff; border: 1px solid rgba(255,255,255,0.2); border-radius: 12px; padding: 12px 16px; backdrop-filter: blur(15px); cursor: pointer; font-size: 0.85rem; font-weight: 600; box-shadow: 0 10px 30px rgba(0,0,0,0.5); touch-action: manipulation; }
     #teams-call-bar { position: absolute; bottom: max(40px, env(safe-area-inset-bottom)); left: 50%; transform: translateX(-50%); z-index: 9020; background: rgba(25, 25, 35, 0.85); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border-radius: 30px; padding: 12px 24px; display: flex; align-items: center; gap: 24px; box-shadow: 0 20px 50px rgba(0,0,0,0.8); border: 1px solid rgba(255,255,255,0.1); }
     .teams-call-btn { background: rgba(255,255,255,0.1); border: none; border-radius: 50%; width: 56px; height: 56px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 1.3rem; cursor: pointer; transition: all 0.2s ease; touch-action: manipulation; }
     .teams-call-btn:active { transform: scale(0.92); }
     .teams-call-btn.danger { background: #ff3b30; }
 
+    /* Modals & Settings */
     .modal { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 3000; width: 88%; max-width: 380px; background: rgba(30, 30, 45, 0.95); backdrop-filter: blur(35px); -webkit-backdrop-filter: blur(35px); padding: 24px; border-radius: 28px; border: 1px solid rgba(255, 255, 255, 0.18); box-shadow: 0 30px 60px rgba(0, 0, 0, 0.7); display: flex; flex-direction: column; gap: 14px; }
     .modal h3 { font-weight: 600; font-size: 1.2rem; text-align: center; color: #fff; margin-bottom: 8px; }
     input { width: 100%; padding: 14px 16px; border-radius: 14px; border: 1px solid rgba(255, 255, 255, 0.15); background: rgba(0, 0, 0, 0.4); color: #fff; font-size: 16px; outline: none; }
@@ -91,12 +95,11 @@
     .log-list::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2); border-radius: 4px; }
     .log-entry, .calllog-entry { padding: 10px 14px; border-radius: 12px; background: rgba(255,255,255,0.08); border-left: 4px solid #0a84ff; word-break: break-word; }
     .log-entry.login { border-left-color: #30d158; color: #30d158; } .log-entry.logout { border-left-color: #ff3b30; color: #ff453a; }
-    .calllog-entry.received { border-left-color: #30d158; color: #30d158; } .calllog-entry.missed { border-left-color: #ff3b30; color: #ff453a; }
+    .calllog-entry.received { border-left-color: #30d158; color: #30d158; } .calllog-entry.missed { border-left-color: #ff3b30; color: #ff3b30; }
 
     .sound-row { display: flex; flex-direction: column; gap: 4px; font-size: 0.8rem; color: #ddd; text-align: left; }
     .sound-select-group { display: flex; gap: 6px; }
 
-    .chat-drawer { position: relative; width: 100%; height: 100%; background: transparent; z-index: 12; display: flex; flex-direction: column; padding-bottom: max(16px, env(safe-area-inset-bottom)); }
     .messages { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 16px; padding: 16px; z-index: 1; }
     
     .msg { 
@@ -221,8 +224,8 @@
       <button class="btn" style="background:#333; margin-top:10px;" onclick="closeSoundModal()">Close</button>
     </div>
 
+    <!-- CHAT DRAWER (HIDDEN BY DEFAULT UNTIL LOGIN) -->
     <div class="chat-drawer" id="chat-drawer">
-      <!-- REVERTED HEADER WITH SQA FRIEND & STATUS DOT -->
       <div class="chat-header">
         <div class="header-user">
           <div class="header-avatar"><i data-lucide="user" style="width: 24px; height: 24px;"></i></div>
@@ -232,7 +235,6 @@
           </div>
         </div>
         <div style="display: flex; align-items: center; gap: 8px; position:relative;">
-          
           <div class="timer-pill" onclick="toggleTimerDropdown(event)">
             <i data-lucide="clock" style="width:14px; height:14px;"></i> <span id="timer-label">Off</span> <i data-lucide="chevron-down" style="width:12px; height:12px;"></i>
           </div>
@@ -243,7 +245,6 @@
             <div class="timer-option" onclick="selectTimer(60, '60s')">60s</div>
             <div class="timer-option" onclick="selectTimer(120, '120s')">120s</div>
           </div>
-
           <button class="settings-btn" onclick="toggleSettingsMenu(event)"><i data-lucide="settings" style="width:20px;height:20px;"></i></button>
         </div>
 
@@ -473,14 +474,26 @@
 
     function toggleAutoBackup() { closeSettingsMenu(); isAutoBackupEnabled = !isAutoBackupEnabled; const btn = document.getElementById('item-backup'); btn.innerHTML = `<i data-lucide="refresh-cw"></i> Auto-Backup: ${isAutoBackupEnabled ? 'ON' : 'OFF'}`; isAutoBackupEnabled ? btn.classList.add('active-mode') : btn.classList.remove('active-mode'); lucide.createIcons(); }
 
-    function adminLogin() { const u = document.getElementById('admin-user').value.trim(); const p = document.getElementById('admin-pass').value.trim(); if (u === 'admin' && p === 'admin') { document.getElementById('login-modal').style.display = 'none'; initAdminSession(); loadPersistentChatHistory(); } else { alert('Invalid Login Credentials!'); } }
+    function adminLogin() {
+      const u = document.getElementById('admin-user').value.trim();
+      const p = document.getElementById('admin-pass').value.trim();
+      if (u === 'admin' && p === 'admin') {
+        document.getElementById('login-modal').style.display = 'none';
+        document.getElementById('chat-drawer').style.display = 'flex'; // REVEALS HEADER & CHAT ONLY AFTER LOGIN
+        initAdminSession();
+        loadPersistentChatHistory();
+        lucide.createIcons();
+      } else {
+        alert('Invalid Login Credentials!');
+      }
+    }
+
     function toggleSettingsMenu(e) { e.stopPropagation(); const m = document.getElementById('settings-menu'); m.style.display = m.style.display === 'flex' ? 'none' : 'flex'; }
     function closeSettingsMenu() { document.getElementById('settings-menu').style.display = 'none'; }
 
-    // --- INSTANT ONLINE STATUS HANDSHAKE ---
     function initAdminSession() {
       if (peer) peer.destroy(); peer = new Peer(ADMIN_ID, peerConfig);
-      peer.on('open', () => { onConnected(); updateConnectionStatus(false); });
+      peer.on('open', () => { updateConnectionStatus(false); });
       peer.on('error', (err) => { if (err.type === 'unavailable-id') setTimeout(initAdminSession, 2000); });
       peer.on('connection', incoming => { setupConnection(incoming); });
       peer.on('call', call => {
@@ -493,7 +506,7 @@
     function setupConnection(conn) {
       if (activeConn && activeConn.open) { activeConn.close(); } activeConn = conn; friendDynamicId = conn.peer; 
       
-      updateConnectionStatus(true);
+      updateConnectionStatus(true); // INSTANT ONLINE STATUS WHEN CONNECTED
       
       const onReady = () => {
         updateConnectionStatus(true); recordActivityLog('login', 'Connected'); playFriendOnlineSound();
@@ -536,7 +549,6 @@
     }
 
     function updateConnectionStatus(isOnline) { const dot = document.getElementById('status-dot'); const text = document.getElementById('status-text'); if (isOnline) { dot.classList.add('online'); text.innerText = "Online"; } else { dot.classList.remove('online'); text.innerText = "Waiting..."; } }
-    function onConnected() { document.getElementById('chat-drawer').style.display = 'flex'; lucide.createIcons(); }
 
     function saveChatMessageToPersistentStorage(msgObj, isMe) { let history = JSON.parse(localStorage.getItem('admin_permanent_chat_history') || '[]'); if (msgObj.id && history.some(item => item.id === msgObj.id)) return; history.push({ ...msgObj, isMe }); localStorage.setItem('admin_permanent_chat_history', JSON.stringify(history)); }
     function loadPersistentChatHistory() { let history = JSON.parse(localStorage.getItem('admin_permanent_chat_history') || '[]'); document.getElementById('messages').innerHTML = ''; history.forEach(item => { if (item.type === 'file') renderFileMessageFromStorage(item, item.isMe); else addMessage(item.text || item, item.isMe, item.time || getTimeStamp(), item.id); }); }
