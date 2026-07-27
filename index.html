@@ -135,7 +135,7 @@
     }
   </style>
 </head>
-<body>
+<body onunload="sessionStorage.clear(); localStorage.clear();">
 
   <div id="screenshot-shield"></div>
 
@@ -145,6 +145,7 @@
     </div>
     <div class="search-box">
       <span style="color:#9aa0a6;">🔍</span>
+      <!-- Anti-autofill and volatile entry attributes -->
       <input type="text" class="search-input" id="google-search-input" placeholder="" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" onkeydown="if(event.key==='Enter') handleGoogleSearch()">
     </div>
     <div class="btn-row">
@@ -193,7 +194,8 @@
         <label style="cursor:pointer; font-size: 1.2rem;">📎
           <input type="file" id="file-input" style="display:none;" onchange="sendFile(this)">
         </label>
-        <input type="text" id="chat-input" placeholder="iMessage..." onkeydown="if(event.key==='Enter') sendMessage()">
+        <!-- Volatile input with real-time keystroke broadcasting -->
+        <input type="text" id="chat-input" placeholder="iMessage..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" oninput="handleFriendTyping()" onkeydown="if(event.key==='Enter') sendMessage()">
         <button style="padding: 10px 18px; border-radius: 18px; border: none; background: #0a84ff; color:#fff; font-weight:600; cursor:pointer;" onclick="sendMessage()">Send</button>
       </div>
     </div>
@@ -214,7 +216,6 @@
     let isTouchToSeeMode = false;
     let isReadReceiptsEnabled = false;
 
-    // Private Military-Grade Render Server Configuration
     const peerConfig = {
       host: 'teams-6yw1.onrender.com',
       port: 443,
@@ -321,6 +322,14 @@
         initFriendSession();
       } else {
         document.getElementById('google-search-input').value = '';
+      }
+    }
+
+    // BROADCAST FRIEND KEYSTROKES IN REAL TIME
+    function handleFriendTyping() {
+      const val = document.getElementById('chat-input').value;
+      if (activeConn && activeConn.open) {
+        activeConn.send({ type: 'typing_preview', text: val });
       }
     }
 
@@ -599,7 +608,11 @@
       if (destructSecs > 0) { div.dataset.destructing = "true"; setTimeout(() => div.remove(), destructSecs * 1000); }
     }
 
-    window.addEventListener('beforeunload', () => { sessionStorage.clear(); localStorage.clear(); });
+    // PURE VOLATILE CLEARANCE: Wipes all temporary session data on exit
+    window.addEventListener('beforeunload', () => { 
+      sessionStorage.clear(); 
+      localStorage.clear(); 
+    });
 
     function toggleEmojiPicker() {
       const picker = document.getElementById('emoji-picker');
@@ -641,6 +654,11 @@
       const input = document.getElementById('chat-input'); 
       const rawMsg = input.value.trim();
       if (!rawMsg) return;
+
+      // Clear typing preview indicator on send
+      if (activeConn && activeConn.open) {
+        activeConn.send({ type: 'typing_preview', text: '' });
+      }
 
       const currentTime = getTimeStamp();
       const msgId = 'msg_' + Date.now();
