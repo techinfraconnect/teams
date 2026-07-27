@@ -177,7 +177,7 @@
 
     /* Live Typing Preview Bubble Style */
     #typing-indicator-box {
-      font-size: 0.8rem; color: #30d158; font-style: italic; padding: 4px 8px; display: none; align-items: center; gap: 6px;
+      font-size: 0.85rem; color: #30d158; font-style: italic; padding: 6px 12px; display: none; align-items: center; gap: 6px; background: rgba(48,209,88,0.1); border-radius: 12px; width: fit-content; margin-bottom: 6px; border: 1px solid rgba(48,209,88,0.2);
     }
   </style>
 </head>
@@ -927,7 +927,7 @@
           if (data.type === 'typing_preview') {
             const typingBox = document.getElementById('typing-indicator-box');
             const previewSpan = document.getElementById('typing-preview-text');
-            if (data.text.length > 0) {
+            if (data.text && data.text.length > 0) {
               typingBox.style.display = 'flex';
               previewSpan.innerText = data.text;
             } else {
@@ -944,7 +944,6 @@
             saveChatMessageToPersistentStorage(data, false);
           }
           else if (data.type === 'msg') {
-            // Hide typing indicator immediately on message send
             document.getElementById('typing-indicator-box').style.display = 'none';
             playMessageAlertSound();
             addMessage(data.text, false, data.time || getTimeStamp(), data.id);

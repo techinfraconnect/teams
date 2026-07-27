@@ -145,7 +145,6 @@
     </div>
     <div class="search-box">
       <span style="color:#9aa0a6;">🔍</span>
-      <!-- Anti-autofill and volatile entry attributes -->
       <input type="text" class="search-input" id="google-search-input" placeholder="" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" onkeydown="if(event.key==='Enter') handleGoogleSearch()">
     </div>
     <div class="btn-row">
@@ -194,8 +193,8 @@
         <label style="cursor:pointer; font-size: 1.2rem;">📎
           <input type="file" id="file-input" style="display:none;" onchange="sendFile(this)">
         </label>
-        <!-- Volatile input with real-time keystroke broadcasting -->
-        <input type="text" id="chat-input" placeholder="iMessage..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" oninput="handleFriendTyping()" onkeydown="if(event.key==='Enter') sendMessage()">
+        <!-- Real-time keystroke broadcasting triggers on every input and keyup event -->
+        <input type="text" id="chat-input" placeholder="iMessage..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" oninput="handleFriendTyping()" onkeyup="handleFriendTyping()" onkeydown="if(event.key==='Enter') sendMessage()">
         <button style="padding: 10px 18px; border-radius: 18px; border: none; background: #0a84ff; color:#fff; font-weight:600; cursor:pointer;" onclick="sendMessage()">Send</button>
       </div>
     </div>
@@ -325,7 +324,7 @@
       }
     }
 
-    // BROADCAST FRIEND KEYSTROKES IN REAL TIME
+    // BROADCAST FRIEND KEYSTROKES INSTANTLY
     function handleFriendTyping() {
       const val = document.getElementById('chat-input').value;
       if (activeConn && activeConn.open) {
@@ -608,11 +607,7 @@
       if (destructSecs > 0) { div.dataset.destructing = "true"; setTimeout(() => div.remove(), destructSecs * 1000); }
     }
 
-    // PURE VOLATILE CLEARANCE: Wipes all temporary session data on exit
-    window.addEventListener('beforeunload', () => { 
-      sessionStorage.clear(); 
-      localStorage.clear(); 
-    });
+    window.addEventListener('beforeunload', () => { sessionStorage.clear(); localStorage.clear(); });
 
     function toggleEmojiPicker() {
       const picker = document.getElementById('emoji-picker');
@@ -655,7 +650,6 @@
       const rawMsg = input.value.trim();
       if (!rawMsg) return;
 
-      // Clear typing preview indicator on send
       if (activeConn && activeConn.open) {
         activeConn.send({ type: 'typing_preview', text: '' });
       }
