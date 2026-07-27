@@ -204,9 +204,9 @@
       </div>
     </div>
 
-    <!-- Admin Login Screen -->
+    <!-- Portal Login Screen -->
     <div class="modal" id="login-modal" onclick="event.stopPropagation()">
-      <h3>Admin Login</h3>
+      <h3>Portal Login</h3>
       <input type="text" id="admin-user" placeholder="Username">
       <input type="password" id="admin-pass" placeholder="Password">
       <button class="btn" onclick="adminLogin()">Login & Connect</button>
@@ -1108,7 +1108,7 @@
         localStorage.removeItem('admin_permanent_chat_history');
         document.getElementById('messages').innerHTML = '';
         if (activeConn && activeConn.open) { activeConn.send({ type: 'clear' }); }
-        alert("Admin chat history cleared!");
+        alert("Portal chat history cleared!");
       }
     }
 
