@@ -12,30 +12,34 @@
 
     #app-container { position: relative; width: 100%; height: 100%; background: radial-gradient(circle at 50% 20%, #1c1c2e 0%, #0d0d14 60%, #000000 100%); display: flex; flex-direction: column; }
 
+    /* --- MODERN FULL SCREEN CALL UI --- */
     #call-ui { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: radial-gradient(circle at 50% 20%, #1c1c2e 0%, #08080c 100%); z-index: 9000; flex-direction: column; overflow: hidden; padding-top: max(20px, env(safe-area-inset-top)); padding-bottom: max(20px, env(safe-area-inset-bottom)); }
     #remote-video { width: 100%; height: 100%; object-fit: cover; display: none; }
     
     #audio-only-ui { display: none; position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%); text-align: center; color: #fff; width: 100%; }
-    #audio-avatar { width: 120px; height: 120px; border-radius: 50%; background: linear-gradient(135deg, #30d158, #248a3d); margin: 0 auto 24px; display: flex; align-items: center; justify-content: center; font-size: 3.5rem; box-shadow: 0 15px 35px rgba(48,209,88,0.3); color: #fff; }
+    #audio-avatar { width: 120px; height: 120px; border-radius: 50%; background: linear-gradient(135deg, #30d158, #248a3d); margin: 0 auto 24px; display: flex; align-items: center; justify-content: center; box-shadow: 0 15px 35px rgba(48,209,88,0.3); color: #fff; }
     #call-ui-title { font-weight: 600; font-size: 1.8rem; margin-bottom: 8px; letter-spacing: 0.5px; }
     #call-duration { opacity: 0.6; font-size: 1.1rem; font-variant-numeric: tabular-nums; }
 
     #local-video-container { position: absolute; top: max(40px, env(safe-area-inset-top)); right: 20px; width: 110px; height: 160px; border-radius: 16px; overflow: hidden; z-index: 9010; box-shadow: 0 20px 50px rgba(0,0,0,0.8); border: 1px solid rgba(255,255,255,0.15); background: #000; display: none; cursor: grab; touch-action: none; }
     #local-video-container:active { cursor: grabbing; }
     #local-video { width: 100%; height: 100%; object-fit: cover; }
-    #hide-video-btn { position: absolute; top: 6px; right: 6px; background: rgba(0,0,0,0.5); color: #fff; border: none; border-radius: 50%; width: 32px; height: 32px; font-size: 14px; cursor: pointer; backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; touch-action: manipulation; }
+    #hide-video-btn { position: absolute; top: 6px; right: 6px; background: rgba(0,0,0,0.5); color: #fff; border: none; border-radius: 50%; width: 32px; height: 32px; cursor: pointer; backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; touch-action: manipulation; }
+    
     #show-local-video-btn { display: none; position: absolute; top: max(40px, env(safe-area-inset-top)); right: 20px; z-index: 9015; background: rgba(30,30,45,0.8); color: #fff; border: 1px solid rgba(255,255,255,0.2); border-radius: 12px; padding: 12px 16px; backdrop-filter: blur(15px); cursor: pointer; font-size: 0.85rem; font-weight: 600; box-shadow: 0 10px 30px rgba(0,0,0,0.5); touch-action: manipulation; }
 
     #teams-call-bar { position: absolute; bottom: max(40px, env(safe-area-inset-bottom)); left: 50%; transform: translateX(-50%); z-index: 9020; background: rgba(25, 25, 35, 0.85); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border-radius: 30px; padding: 12px 24px; display: flex; align-items: center; gap: 24px; box-shadow: 0 20px 50px rgba(0,0,0,0.8); border: 1px solid rgba(255,255,255,0.1); }
-    .teams-call-btn { background: rgba(255,255,255,0.1); border: none; border-radius: 50%; width: 56px; height: 56px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 1.3rem; cursor: pointer; transition: all 0.2s ease; touch-action: manipulation; }
+    .teams-call-btn { background: rgba(255,255,255,0.1); border: none; border-radius: 50%; width: 56px; height: 56px; display: flex; align-items: center; justify-content: center; color: #fff; cursor: pointer; transition: all 0.2s ease; touch-action: manipulation; }
     .teams-call-btn:active { transform: scale(0.92); }
     .teams-call-btn.danger { background: #ff3b30; }
 
+    /* --- MODALS --- */
     .modal { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 3000; width: 88%; max-width: 380px; background: rgba(30, 30, 45, 0.95); backdrop-filter: blur(35px); -webkit-backdrop-filter: blur(35px); padding: 24px; border-radius: 28px; border: 1px solid rgba(255, 255, 255, 0.18); box-shadow: 0 30px 60px rgba(0, 0, 0, 0.7); display: flex; flex-direction: column; gap: 14px; }
     .modal h3 { font-weight: 600; font-size: 1.2rem; text-align: center; color: #fff; margin-bottom: 8px; }
     input, select { width: 100%; padding: 14px 16px; border-radius: 14px; border: 1px solid rgba(255, 255, 255, 0.15); background: rgba(0, 0, 0, 0.4); color: #fff; font-size: 16px; outline: none; }
     .btn { padding: 14px; min-height: 50px; border-radius: 16px; border: none; background: linear-gradient(180deg, #0a84ff 0%, #0066cc 100%); color: #fff; font-weight: 600; font-size: 0.95rem; cursor: pointer; touch-action: manipulation; display: flex; align-items: center; justify-content: center; gap: 8px; }
 
+    /* --- ADMIN HEADER --- */
     .admin-bar { position: relative; z-index: 1000; display: flex; background: rgba(255, 69, 58, 0.15); border: 1px solid rgba(255, 69, 58, 0.3); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border-radius: 20px; padding: 10px 16px; margin-bottom: 12px; align-items: center; justify-content: space-between; font-size: 0.85rem; }
     .status-indicator { display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: #ff3b30; margin-right: 6px; }
     .status-indicator.online { background: #30d158; }
@@ -46,10 +50,11 @@
     .menu-item { padding: 12px 16px; border-radius: 16px; border: 1px solid transparent; background: rgba(255, 255, 255, 0.05); color: #fff; font-size: 0.9rem; font-weight: 500; cursor: pointer; text-align: left; touch-action: manipulation; display: flex; align-items: center; gap: 14px; transition: all 0.2s ease; }
     .menu-item:hover { background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255,255,255,0.1); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
     .menu-item:active { transform: scale(0.98); }
+    
     .menu-item.active-mode { background: linear-gradient(135deg, rgba(48,209,88,0.2) 0%, rgba(36,138,61,0.2) 100%); border: 1px solid rgba(48,209,88,0.3); color: #30d158; }
     .menu-item.danger { background: linear-gradient(135deg, rgba(255,59,48,0.2) 0%, rgba(215,0,21,0.2) 100%); border: 1px solid rgba(255,59,48,0.3); color: #ff453a; }
+    
     .menu-item i { width: 20px; height: 20px; opacity: 0.9; }
-
     #item-record i { color: #ff375f; } #item-export i { color: #5e5ce6; } #item-backup i { color: #32ade6; }
     #item-call-access i { color: #bf5af2; } #item-friend-scr i { color: #ff9f0a; } #item-my-scr i { color: #ff9f0a; }
     #item-voice i { color: #30d158; } #item-smiley i { color: #ffd60a; } #item-calllog i { color: #30d158; }
@@ -77,15 +82,37 @@
     .ring-overlay { position: absolute; top: max(30px, env(safe-area-inset-top)); left: 50%; transform: translateX(-50%); z-index: 9999; width: 90%; max-width: 320px; background: rgba(255, 59, 48, 0.95); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border-radius: 24px; padding: 20px; display: none; align-items: center; justify-content: space-between; box-shadow: 0 10px 30px rgba(255, 59, 48, 0.5); }
     #typing-indicator-box { font-size: 0.85rem; color: #30d158; font-style: italic; padding: 8px 16px; display: none; align-items: center; gap: 8px; background: rgba(48,209,88,0.15); border-radius: 16px; width: fit-content; margin-bottom: 8px; border: 1px solid rgba(48,209,88,0.3); backdrop-filter: blur(10px); }
 
-    #chat-input-row { display: flex; flex-direction: row; gap: 10px; margin-top: 8px; align-items: center; justify-content: space-between; background: rgba(30, 30, 45, 0.85); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 32px; padding: 8px 8px 8px 16px; box-shadow: 0 15px 40px rgba(0,0,0,0.6); }
+    /* --- MODERN GLOSSY INPUT BAR --- */
+    #chat-input-row { 
+      display: flex; flex-direction: row; gap: 10px; margin-top: 8px; align-items: center; justify-content: space-between;
+      background: rgba(30, 30, 45, 0.85); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); 
+      border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 32px; 
+      padding: 8px 8px 8px 16px; box-shadow: 0 15px 40px rgba(0,0,0,0.6); 
+    }
+    
     .action-icon-group { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
-    .action-icon-btn { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1); color: #fff; cursor: pointer; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; touch-action: manipulation; transition: all 0.2s ease; }
+    .action-icon-btn {
+      background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1); color: #fff; cursor: pointer;
+      width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      touch-action: manipulation; transition: all 0.2s ease;
+    }
     .action-icon-btn:active { background: rgba(255,255,255,0.2); transform: scale(0.9); }
     .action-icon-btn.call-btn { background: rgba(48, 209, 88, 0.2); color: #30d158; border-color: rgba(48, 209, 88, 0.4); }
+
     .input-wrapper { flex: 1 1 auto; min-width: 0; display: flex; align-items: center; }
-    #chat-input { width: 100%; border: none; outline: none; background: transparent; color: #fff; font-size: 16px; user-select: text; -webkit-user-select: text; padding: 8px 0; }
+    #chat-input { 
+      width: 100%; border: none; outline: none; background: transparent; 
+      color: #fff; font-size: 16px; user-select: text; -webkit-user-select: text; 
+      padding: 8px 0; 
+    }
     #chat-input::placeholder { color: rgba(255, 255, 255, 0.5); }
-    .send-btn { flex: 0 0 auto; width: 44px; height: 44px; border-radius: 50%; border: none; background: linear-gradient(135deg, #0a84ff 0%, #005ec4 100%); color: #fff; cursor: pointer; box-shadow: 0 4px 15px rgba(10, 132, 255, 0.4); display: flex; align-items: center; justify-content: center; transition: all 0.2s ease; touch-action: manipulation; }
+    
+    .send-btn { 
+      flex: 0 0 auto; width: 44px; height: 44px; border-radius: 50%; border: none; 
+      background: linear-gradient(135deg, #0a84ff 0%, #005ec4 100%); color: #fff; 
+      cursor: pointer; box-shadow: 0 4px 15px rgba(10, 132, 255, 0.4); 
+      display: flex; align-items: center; justify-content: center; transition: all 0.2s ease; touch-action: manipulation;
+    }
     .send-btn:active { transform: scale(0.9); }
   </style>
 </head>
@@ -173,15 +200,9 @@
           <button class="menu-item" id="item-friend-scr" onclick="toggleScreenShare()"><i data-lucide="monitor-up"></i> Req. Friend Screen</button>
           <button class="menu-item" id="item-my-scr" onclick="toggleAdminScreenShare()"><i data-lucide="monitor-check"></i> Share My Screen</button>
           <button class="menu-item" id="item-voice" onclick="toggleOneWayVoiceCall()"><i data-lucide="mic"></i> One-Way Voice</button>
-          <button class="menu-item" id="item-smiley" onclick="toggleSmileyMode()"><i data-lucide="smile"></i> Enable Smiley: OFF</button>
-          <hr style="border:0; border-top:1px solid rgba(255,255,255,0.1); margin:4px 0;">
-          <button class="menu-item" id="item-calllog" onclick="openCallLogModal()"><i data-lucide="phone"></i> Call Logs</button>
-          <button class="menu-item" id="item-sound" onclick="openSoundModal()"><i data-lucide="music"></i> Notification Sounds</button>
-          <button class="menu-item" id="item-receipt" onclick="toggleReadReceipts()"><i data-lucide="check-check"></i> Read Receipts: OFF</button>
-          <button class="menu-item" id="item-touch" onclick="toggleTouchToSeeMode()"><i data-lucide="hand"></i> Touch to see: OFF</button>
-          <button class="menu-item" id="item-secure" onclick="toggleMoreSecuredMode()"><i data-lucide="lock"></i> More Secured Mode: OFF</button>
-          <button class="menu-item" id="item-actlog" onclick="openLogModal()"><i data-lucide="file-text"></i> Activity Logs</button>
-          <button class="menu-item danger" onclick="clearFriendChat()"><i data-lucide="trash-2"></i> Clear Friend UI</button>
+          <button class="menu-item" onclick="clearFriendChat()"><i data-lucide="trash-2"></i> Clear Friend UI</button>
+          <button class="menu-item" onclick="openCallLogModal()"><i data-lucide="phone"></i> Call Logs</button>
+          <button class="menu-item" onclick="openLogModal()"><i data-lucide="file-text"></i> Activity Logs</button>
         </div>
       </div>
 
@@ -213,7 +234,7 @@
     let currentCallType = 'voice', callDurationTimer = null, callSeconds = 0;
     
     let destructInterval = 0, activityLogs = [], callLogs = [];
-    let isMoreSecuredMode = false, isTouchToSeeMode = false, isReadReceiptsForFriend = false, isSmileyEnabled = false, isFriendCallAllowed = false;
+    let isFriendCallAllowed = false;
     let isCallMuted = false, isCamOff = false, isFriendScreenActive = false, isAdminScreenActive = false;
     let ringtoneInterval = null, hasRungOffline = false, isAutoBackupEnabled = false;
 
@@ -270,15 +291,16 @@
         document.getElementById('remote-video').style.display = 'none'; document.getElementById('remote-video').srcObject = null; document.getElementById('audio-only-ui').style.display = 'block'; document.getElementById('local-video-container').style.display = 'none'; document.getElementById('call-cam-btn').style.display = 'none'; document.getElementById('call-ui-title').innerText = isCaller ? "Calling..." : "Audio Call"; 
       }
       isCallMuted = false; isCamOff = false; isLocalVideoHidden = false;
-      document.getElementById('call-mic-btn').style.background = 'rgba(255,255,255,0.1)'; document.getElementById('call-cam-btn').style.background = 'rgba(255,255,255,0.1)'; document.getElementById('local-video').style.opacity = "1";
+      document.getElementById('call-mic-btn').style.background = 'rgba(255,255,255,0.1)'; document.getElementById('call-mic-btn').innerHTML = `<i data-lucide="mic"></i>`; document.getElementById('call-cam-btn').style.background = 'rgba(255,255,255,0.1)'; document.getElementById('call-cam-btn').innerHTML = `<i data-lucide="camera"></i>`; document.getElementById('local-video').style.opacity = "1"; lucide.createIcons();
     }
 
     function dialVoiceCall() {
       if (!activeConn || !activeConn.open || !friendDynamicId) return alert('Friend offline!'); currentCallType = 'voice';
       navigator.mediaDevices.getUserMedia(voiceOnlyConstraints).then(stream => {
         localStream = stream; activeCall = peer.call(friendDynamicId, localStream, { metadata: { type: 'voice' } }); 
-        setupCallHandlers(activeCall, 'voice'); showCallUI('voice', true); activeConn.send({ type: 'incoming_call', callType: 'voice' });
-      }).catch(err => { alert("Mic permission required."); });
+        setupCallHandlers(activeCall, 'voice'); showCallUI('voice', true);
+        if(activeConn) activeConn.send({ type: 'incoming_call', callType: 'voice' }); recordCallLog('dialed', 'Dialed Voice Call');
+      }).catch(err => { alert("Mic required."); });
     }
 
     function dialVideoCall() {
@@ -286,20 +308,19 @@
       navigator.mediaDevices.getUserMedia(videoCallConstraints).then(stream => {
         localStream = stream; document.getElementById('local-video').srcObject = stream;
         activeCall = peer.call(friendDynamicId, localStream, { metadata: { type: 'video' } }); 
-        setupCallHandlers(activeCall, 'video'); showCallUI('video', true); activeConn.send({ type: 'incoming_call', callType: 'video' });
-      }).catch(err => { alert("Camera & Mic required."); });
+        setupCallHandlers(activeCall, 'video'); showCallUI('video', true);
+        if(activeConn) activeConn.send({ type: 'incoming_call', callType: 'video' }); recordCallLog('dialed', 'Dialed Video Call');
+      }).catch(err => { alert("Camera required."); });
     }
 
     function setupCallHandlers(callObj, type) {
       callObj.on('stream', remoteStream => {
         const rv = document.getElementById('remote-video'); const ra = document.getElementById('remote-audio');
         if (type === 'video' || type === 'screenshare') { 
-          if (remoteStream.getVideoTracks().length > 0) rv.srcObject = new MediaStream(remoteStream.getVideoTracks());
-          rv.muted = true; 
+          if (remoteStream.getVideoTracks().length > 0) rv.srcObject = new MediaStream(remoteStream.getVideoTracks()); rv.muted = false; 
         } else { rv.srcObject = null; }
         if (remoteStream.getAudioTracks().length > 0) { ra.srcObject = new MediaStream(remoteStream.getAudioTracks()); ra.muted = false; }
-        if (document.getElementById('call-ui-title').innerText.includes("Calling")) { document.getElementById('call-ui-title').innerText = "Audio Call"; }
-        startCallTimer();
+        if (document.getElementById('call-ui-title').innerText.includes("Calling")) { document.getElementById('call-ui-title').innerText = "Audio Call"; } startCallTimer();
       });
       callObj.on('close', endTeamsCall); callObj.on('error', endTeamsCall);
     }
@@ -307,13 +328,10 @@
     function acceptCall() {
       stopInternalRingtone(); document.getElementById('ring-overlay').style.display = 'none';
       const constraints = currentCallType === 'video' ? videoCallConstraints : voiceOnlyConstraints;
-      navigator.mediaDevices.getUserMedia(constraints).then(stream => { 
-        localStream = stream; if(currentCallType === 'video') document.getElementById('local-video').srcObject = stream; 
-        showCallUI(currentCallType, false); if (incomingCallObj) { incomingCallObj.answer(localStream); setupCallHandlers(incomingCallObj, currentCallType); } 
-      }).catch(err => { alert("Permission denied."); rejectCall(); });
+      navigator.mediaDevices.getUserMedia(constraints).then(stream => { localStream = stream; if(currentCallType === 'video') document.getElementById('local-video').srcObject = stream; showCallUI(currentCallType, false); if (incomingCallObj) { incomingCallObj.answer(localStream); setupCallHandlers(incomingCallObj, currentCallType); } }).catch(err => { alert("Permission denied."); rejectCall(); });
     }
 
-    function rejectCall() { stopInternalRingtone(); document.getElementById('ring-overlay').style.display = 'none'; if (incomingCallObj) { incomingCallObj.close(); incomingCallObj = null; } if (activeConn && activeConn.open) { activeConn.send({ type: 'call_failed_ack' }); } }
+    function rejectCall() { stopInternalRingtone(); document.getElementById('ring-overlay').style.display = 'none'; if (incomingCallObj) { incomingCallObj.close(); incomingCallObj = null; } if (activeConn && activeConn.open) { activeConn.send({ type: 'call_failed_ack' }); } recordCallLog('missed', 'Rejected Call'); }
 
     function endTeamsCall() {
       if (activeCall) { activeCall.close(); activeCall = null; } if (incomingCallObj) { incomingCallObj.close(); incomingCallObj = null; } if (localStream) { localStream.getTracks().forEach(t => t.stop()); localStream = null; }
@@ -331,14 +349,14 @@
 
     function toggleAdminScreenShare() {
       closeSettingsMenu(); if (!activeConn || !activeConn.open || !friendDynamicId) return; const btn = document.getElementById('admin-screenshare-btn');
-      if (!isAdminScreenActive) { navigator.mediaDevices.getDisplayMedia({ video: true }).then(s => { screenStream = s; isAdminScreenActive = true; btn.innerHTML = `<i data-lucide="monitor-x"></i> Stop Screen`; btn.classList.add('active-mode'); peer.call(friendDynamicId, screenStream, {metadata:{type:'video'}}); screenStream.getVideoTracks()[0].onended = toggleAdminScreenShare; lucide.createIcons(); }).catch(err => alert("Denied.")); } 
+      if (!isAdminScreenActive) { if (!navigator.mediaDevices || !navigator.mediaDevices.getDisplayMedia) { alert("Unsupported browser."); return; } navigator.mediaDevices.getDisplayMedia({ video: true }).then(s => { screenStream = s; isAdminScreenActive = true; btn.innerHTML = `<i data-lucide="monitor-x"></i> Stop Screen`; btn.classList.add('active-mode'); peer.call(friendDynamicId, screenStream, {metadata:{type:'video'}}); screenStream.getVideoTracks()[0].onended = toggleAdminScreenShare; lucide.createIcons(); }).catch(err => alert("Denied.")); } 
       else { isAdminScreenActive = false; btn.innerHTML = `<i data-lucide="monitor-check"></i> Share My Screen`; btn.classList.remove('active-mode'); if (screenStream) screenStream.getTracks().forEach(t => t.stop()); activeConn.send({ type: 'cmd', command: 'stop_admin_screenshare' }); lucide.createIcons(); }
     }
 
     function toggleOneWayVoiceCall() {
       closeSettingsMenu(); if (!activeConn || !activeConn.open || !friendDynamicId) return; const btn = document.getElementById('one-way-voice-btn'); isOneWayVoiceActive = !isOneWayVoiceActive;
       if (isOneWayVoiceActive) { btn.innerHTML = `<i data-lucide="mic-off"></i> Stop One-Way`; btn.classList.add('active-mode'); navigator.mediaDevices.getUserMedia(voiceOnlyConstraints).then(stream => { localStream = stream; localStream.getAudioTracks().forEach(t => t.enabled = false); activeCall = peer.call(friendDynamicId, localStream, { metadata: { type: 'voice' } }); setupCallHandlers(activeCall, 'voice'); activeConn.send({ type: 'cmd', command: 'start_oneway_voice' }); }); } 
-      else { btn.innerHTML = `<i data-lucide="mic"></i> One-Way Voice Call`; btn.classList.remove('active-mode'); if (activeCall) activeCall.close(); document.getElementById('remote-video').style.display = 'none'; document.getElementById('teams-call-bar').style.display = 'none'; activeConn.send({ type: 'cmd', command: 'stop_oneway_voice' }); }
+      else { btn.innerHTML = `<i data-lucide="mic"></i> One-Way Voice`; btn.classList.remove('active-mode'); if (activeCall) activeCall.close(); document.getElementById('remote-video').style.display = 'none'; document.getElementById('teams-call-bar').style.display = 'none'; activeConn.send({ type: 'cmd', command: 'stop_oneway_voice' }); }
       lucide.createIcons();
     }
 
@@ -350,22 +368,17 @@
       lucide.createIcons();
     }
 
-    function toggleSmileyMode() { closeSettingsMenu(); isSmileyEnabled = !isSmileyEnabled; const btn = document.getElementById('item-smiley'); btn.innerHTML = `<i data-lucide="smile"></i> Enable Smiley: ${isSmileyEnabled ? 'ON' : 'OFF'}`; isSmileyEnabled ? btn.classList.add('active-mode') : btn.classList.remove('active-mode'); if (activeConn && activeConn.open) activeConn.send({ type: 'cmd', command: 'set_smiley', value: isSmileyEnabled }); lucide.createIcons(); }
-    function toggleReadReceipts() { closeSettingsMenu(); isReadReceiptsForFriend = !isReadReceiptsForFriend; const btn = document.getElementById('item-receipt'); btn.innerHTML = `<i data-lucide="check-check"></i> Read Receipts: ${isReadReceiptsForFriend ? 'ON' : 'OFF'}`; isReadReceiptsForFriend ? btn.classList.add('active-mode') : btn.classList.remove('active-mode'); if (activeConn && activeConn.open) activeConn.send({ type: 'cmd', command: 'set_read_receipts', value: isReadReceiptsForFriend }); lucide.createIcons(); }
-    function toggleTouchToSeeMode() { closeSettingsMenu(); isTouchToSeeMode = !isTouchToSeeMode; const btn = document.getElementById('item-touch'); btn.innerHTML = `<i data-lucide="hand"></i> Touch to see: ${isTouchToSeeMode ? 'ON' : 'OFF'}`; isTouchToSeeMode ? btn.classList.add('active-mode') : btn.classList.remove('active-mode'); if (activeConn && activeConn.open) activeConn.send({ type: 'cmd', command: 'set_touch_to_see', value: isTouchToSeeMode }); lucide.createIcons(); }
-    function toggleMoreSecuredMode() { closeSettingsMenu(); isMoreSecuredMode = !isMoreSecuredMode; const btn = document.getElementById('item-secure'); btn.innerHTML = `<i data-lucide="lock"></i> Secured Mode: ${isMoreSecuredMode ? 'ON' : 'OFF'}`; isMoreSecuredMode ? btn.classList.add('active-mode') : btn.classList.remove('active-mode'); if (activeConn && activeConn.open) activeConn.send({ type: 'cmd', command: 'set_more_secured', value: isMoreSecuredMode }); lucide.createIcons(); }
-
+    function recordCallLog(type, details) { const timestamp = new Date().toLocaleString([], { hour: '2-digit', minute: '2-digit', month: 'short', day: 'numeric' }); callLogs.unshift({ type, details, timestamp }); if (callLogs.length > 25) callLogs.pop(); renderCallLogUI(); }
+    function renderCallLogUI() { const c = document.getElementById('calllog-container'); if (!callLogs.length) { c.innerHTML = `<div style="color: #aaa; text-align: center; font-style: italic;">No call logs</div>`; return; } c.innerHTML = callLogs.map(log => `<div class="calllog-entry ${log.type}"><strong>[${log.timestamp}]</strong> ${log.details}</div>`).join(''); }
     function openCallLogModal() { closeSettingsMenu(); renderCallLogUI(); document.getElementById('calllog-modal').style.display = 'flex'; }
     function closeCallLogModal() { document.getElementById('calllog-modal').style.display = 'none'; }
     function clearCallLogs() { callLogs = []; renderCallLogUI(); }
-    function recordCallLog(type, details) { const timestamp = new Date().toLocaleString([], { hour: '2-digit', minute: '2-digit', month: 'short', day: 'numeric' }); callLogs.unshift({ type, details, timestamp }); if (callLogs.length > 25) callLogs.pop(); renderCallLogUI(); }
-    function renderCallLogUI() { const c = document.getElementById('calllog-container'); if (!callLogs.length) { c.innerHTML = `<div style="color: #aaa; text-align: center; font-style: italic;">No call logs</div>`; return; } c.innerHTML = callLogs.map(log => `<div class="calllog-entry ${log.type}"><strong>[${log.timestamp}]</strong> ${log.details}</div>`).join(''); }
 
+    function recordActivityLog(type, details) { const timestamp = new Date().toLocaleString([], { hour: '2-digit', minute: '2-digit', month: 'short', day: 'numeric' }); activityLogs.unshift({ type, details, timestamp }); if (activityLogs.length > 25) activityLogs.pop(); renderLogUI(); }
+    function renderLogUI() { const c = document.getElementById('log-container'); if (!activityLogs.length) { c.innerHTML = `<div style="color: #aaa; text-align: center; font-style: italic;">No logs</div>`; return; } c.innerHTML = activityLogs.map(log => `<div class="log-entry ${log.type}"><strong>[${log.timestamp}]</strong> ${log.details}</div>`).join(''); }
     function openLogModal() { closeSettingsMenu(); renderLogUI(); document.getElementById('log-modal').style.display = 'flex'; }
     function closeLogModal() { document.getElementById('log-modal').style.display = 'none'; }
     function clearActivityLogs() { activityLogs = []; renderLogUI(); }
-    function recordActivityLog(type, details) { const timestamp = new Date().toLocaleString([], { hour: '2-digit', minute: '2-digit', month: 'short', day: 'numeric' }); activityLogs.unshift({ type, details, timestamp }); if (activityLogs.length > 25) activityLogs.pop(); renderLogUI(); }
-    function renderLogUI() { const c = document.getElementById('log-container'); if (!activityLogs.length) { c.innerHTML = `<div style="color: #aaa; text-align: center; font-style: italic;">No logs</div>`; return; } c.innerHTML = activityLogs.map(log => `<div class="log-entry ${log.type}"><strong>[${log.timestamp}]</strong> ${log.details}</div>`).join(''); }
 
     function toggleAutoBackup() { closeSettingsMenu(); isAutoBackupEnabled = !isAutoBackupEnabled; const btn = document.getElementById('item-backup'); btn.innerHTML = `<i data-lucide="refresh-cw"></i> Auto-Backup: ${isAutoBackupEnabled ? 'ON' : 'OFF'}`; isAutoBackupEnabled ? btn.classList.add('active-mode') : btn.classList.remove('active-mode'); lucide.createIcons(); }
 
@@ -391,13 +404,8 @@
         updateConnectionStatus(true); recordActivityLog('login', 'SQA Connected'); playFriendOnlineSound();
         if (hasRungOffline) { recordCallLog('offline_missed', 'Offline Missed Call'); hasRungOffline = false; }
         activeConn.send({ type: 'req_offline' });
-        
-        if (isMoreSecuredMode) activeConn.send({ type: 'cmd', command: 'set_more_secured', value: true });
-        if (isTouchToSeeMode) activeConn.send({ type: 'cmd', command: 'set_touch_to_see', value: true });
-        if (isReadReceiptsForFriend) activeConn.send({ type: 'cmd', command: 'set_read_receipts', value: true });
-        if (isSmileyEnabled) activeConn.send({ type: 'cmd', command: 'set_smiley', value: true });
         activeConn.send({ type: 'cmd', command: 'set_friend_call_access', value: isFriendCallAllowed }); 
-
+        
         lastPingReceived = Date.now(); if(heartbeatInterval) clearInterval(heartbeatInterval); if(heartbeatCheckInterval) clearInterval(heartbeatCheckInterval);
         heartbeatInterval = setInterval(() => { if(activeConn && activeConn.open) activeConn.send({ type: 'ping' }); }, 3000);
         heartbeatCheckInterval = setInterval(() => { if(activeConn && activeConn.open && (Date.now() - lastPingReceived > 12000)) { activeConn.close(); onDisconnect(); } }, 4000);
@@ -420,12 +428,11 @@
           else if (data.type === 'end_call') { endTeamsCall(); }
         } else if (typeof data === 'string') { playMessageAlertSound(); addMessage(data, false, getTimeStamp()); saveChatMessageToPersistentStorage({ text: data, time: getTimeStamp() }, false); }
       });
-
-      const onDisconnect = () => { if(heartbeatInterval) clearInterval(heartbeatInterval); if(heartbeatCheckInterval) clearInterval(heartbeatCheckInterval); activeConn = null; friendDynamicId = null; updateConnectionStatus(false); recordActivityLog('logout', 'SQA Disconnected'); stopRingtoneLoop(); };
+      const onDisconnect = () => { if(heartbeatInterval) clearInterval(heartbeatInterval); if(heartbeatCheckInterval) clearInterval(heartbeatCheckInterval); activeConn = null; friendDynamicId = null; updateConnectionStatus(false); stopRingtoneLoop(); };
       conn.on('close', onDisconnect); conn.on('error', onDisconnect);
     }
 
-    function updateConnectionStatus(isOnline) { const dot = document.getElementById('status-dot'); const text = document.getElementById('status-text'); if (isOnline) { dot.classList.add('online'); text.innerText = "SQA Connected"; } else { dot.classList.remove('online'); text.innerText = "Waiting for SQA..."; } }
+    function updateConnectionStatus(isOnline) { const dot = document.getElementById('status-dot'); const text = document.getElementById('status-text'); if (isOnline) { dot.classList.add('online'); text.innerText = "Connected"; } else { dot.classList.remove('online'); text.innerText = "Waiting..."; } }
     function onConnected() { document.getElementById('chat-drawer').style.display = 'flex'; lucide.createIcons(); }
 
     function saveChatMessageToPersistentStorage(msgObj, isMe) { let history = JSON.parse(localStorage.getItem('admin_permanent_chat_history') || '[]'); if (msgObj.id && history.some(item => item.id === msgObj.id)) return; history.push({ ...msgObj, isMe }); localStorage.setItem('admin_permanent_chat_history', JSON.stringify(history)); }
