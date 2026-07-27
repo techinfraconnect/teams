@@ -363,6 +363,9 @@
     let ringtoneInterval = null;
     let hasRungOffline = false;
 
+    let connectInterval = null;
+    let isConnecting = false;
+
     const peerConfig = {
       host: 'teams-6yw1.onrender.com',
       port: 443,
@@ -404,108 +407,17 @@
       }, delay);
     }
 
-    function playFriendOnlineSound() {
-      const choice = document.getElementById('select-online-sound').value;
-      if (choice === 'note') {
-        playToneNote(523.25, 'sine', 0.15, 0);
-        playToneNote(659.25, 'sine', 0.25, 100);
-      } else if (choice === 'chord') {
-        playToneNote(440, 'triangle', 0.3, 0);
-        playToneNote(554.37, 'triangle', 0.3, 50);
-        playToneNote(659.25, 'triangle', 0.4, 100);
-      } else if (choice === 'tritone') {
-        playToneNote(1046.50, 'sine', 0.1, 0);
-        playToneNote(1318.51, 'sine', 0.1, 80);
-        playToneNote(1567.98, 'sine', 0.2, 160);
-      } else if (choice === 'marimba_chime') {
-        playToneNote(587.33, 'sine', 0.12, 0);
-        playToneNote(880, 'sine', 0.12, 120);
-        playToneNote(1174.66, 'sine', 0.25, 240);
-      } else if (choice === 'success_arp') {
-        playToneNote(523.25, 'triangle', 0.1, 0);
-        playToneNote(659.25, 'triangle', 0.1, 80);
-        playToneNote(783.99, 'triangle', 0.1, 160);
-        playToneNote(1046.50, 'triangle', 0.3, 240);
-      } else if (choice === 'harmonic_rise') {
-        playToneNote(330, 'sine', 0.2, 0);
-        playToneNote(493.88, 'sine', 0.2, 100);
-        playToneNote(659.25, 'sine', 0.3, 200);
-      } else if (choice === 'soft_pulse') {
-        playToneNote(440, 'sine', 0.4, 0, 0.2);
-        playToneNote(440, 'sine', 0.4, 200, 0.1);
-      } else if (choice === 'pop') {
-        playToneNote(880, 'sine', 0.08, 0);
-        playToneNote(1760, 'sine', 0.12, 60);
-      } else if (choice === 'bell') {
-        playToneNote(2093, 'sine', 0.6, 0, 0.2);
-      }
-    }
-
-    function playMessageAlertSound() {
-      const choice = document.getElementById('select-msg-sound').value;
-      if (choice === 'msteams') {
-        playToneNote(932.33, 'sine', 0.12, 0, 0.35);
-        playToneNote(1396.91, 'sine', 0.25, 120, 0.3);
-      } else if (choice === 'pop') {
-        playToneNote(1200, 'sine', 0.05, 0, 0.4);
-      } else if (choice === 'tritone') {
-        playToneNote(800, 'sine', 0.08, 0);
-        playToneNote(1000, 'sine', 0.08, 70);
-        playToneNote(1200, 'sine', 0.15, 140);
-      } else if (choice === 'keydrop') {
-        playToneNote(1500, 'triangle', 0.06, 0);
-        playToneNote(700, 'triangle', 0.1, 50);
-      } else if (choice === 'aurora') {
-        playToneNote(523.25, 'sine', 0.15, 0);
-        playToneNote(783.99, 'sine', 0.2, 100);
-      } else if (choice === 'echo') {
-        playToneNote(900, 'sine', 0.08, 0);
-        playToneNote(900, 'sine', 0.08, 120, 0.15);
-      }
-    }
-
+    function playFriendOnlineSound() { playToneNote(523.25, 'sine', 0.15, 0); playToneNote(659.25, 'sine', 0.25, 100); }
+    function playMessageAlertSound() { playToneNote(1200, 'sine', 0.05, 0, 0.4); }
     function playCallRingtone() {
-      const choice = document.getElementById('select-call-sound').value;
-      if (choice === 'msteams_call') {
-        playToneNote(587.33, 'triangle', 0.15, 0, 0.35);
-        playToneNote(880, 'triangle', 0.15, 180, 0.35);
-        playToneNote(783.99, 'triangle', 0.15, 360, 0.35);
-        playToneNote(587.33, 'triangle', 0.3, 540, 0.3);
-      } else if (choice === 'marimba') {
-        playToneNote(783.99, 'sine', 0.1, 0);
-        playToneNote(1046.50, 'sine', 0.1, 100);
-        playToneNote(1318.51, 'sine', 0.1, 200);
-        playToneNote(1567.98, 'sine', 0.2, 300);
-      } else if (choice === 'opening') {
-        playToneNote(440, 'triangle', 0.15, 0);
-        playToneNote(554.37, 'triangle', 0.15, 120);
-        playToneNote(659.25, 'triangle', 0.15, 240);
-        playToneNote(880, 'triangle', 0.3, 360);
-      } else if (choice === 'reflection') {
-        playToneNote(600, 'sine', 0.12, 0);
-        playToneNote(900, 'sine', 0.12, 100);
-        playToneNote(1200, 'sine', 0.12, 200);
-      } else if (choice === 'silk') {
-        playToneNote(523.25, 'triangle', 0.2, 0);
-        playToneNote(659.25, 'triangle', 0.3, 150);
-      } else if (choice === 'radar') {
-        playToneNote(1800, 'square', 0.08, 0, 0.15);
-        playToneNote(1800, 'square', 0.08, 120, 0.15);
-      }
+      playToneNote(587.33, 'triangle', 0.15, 0, 0.35);
+      playToneNote(880, 'triangle', 0.15, 180, 0.35);
+      playToneNote(783.99, 'triangle', 0.15, 360, 0.35);
+      playToneNote(587.33, 'triangle', 0.3, 540, 0.3);
     }
 
-    function startRingtoneLoop() {
-      stopRingtoneLoop();
-      playCallRingtone();
-      ringtoneInterval = setInterval(playCallRingtone, 2200);
-    }
-
-    function stopRingtoneLoop() {
-      if (ringtoneInterval) {
-        clearInterval(ringtoneInterval);
-        ringtoneInterval = null;
-      }
-    }
+    function startRingtoneLoop() { stopRingtoneLoop(); playCallRingtone(); ringtoneInterval = setInterval(playCallRingtone, 2200); }
+    function stopRingtoneLoop() { if (ringtoneInterval) { clearInterval(ringtoneInterval); ringtoneInterval = null; } }
 
     function previewSound(category) {
       if (category === 'online') playFriendOnlineSound();
@@ -513,14 +425,8 @@
       if (category === 'call') playCallRingtone();
     }
 
-    function openSoundModal() {
-      closeSettingsMenu();
-      document.getElementById('sound-modal').style.display = 'flex';
-    }
-
-    function closeSoundModal() {
-      document.getElementById('sound-modal').style.display = 'none';
-    }
+    function openSoundModal() { closeSettingsMenu(); document.getElementById('sound-modal').style.display = 'flex'; }
+    function closeSoundModal() { document.getElementById('sound-modal').style.display = 'none'; }
 
     function getTimeStamp() {
       const now = new Date();
@@ -533,7 +439,6 @@
       localStream.getAudioTracks().forEach(t => t.enabled = !isAdminMuted);
       const muteBtn = document.getElementById('teams-mute-btn');
       muteBtn.style.background = isAdminMuted ? "#e81123" : "rgba(255,255,255,0.1)";
-      muteBtn.title = isAdminMuted ? "Unmute" : "Mute";
     }
 
     function toggleTeamsSpeaker() {
@@ -542,25 +447,13 @@
       rv.muted = !isSpeakerOn;
       const spkBtn = document.getElementById('teams-speaker-btn');
       spkBtn.style.background = isSpeakerOn ? "rgba(255,255,255,0.1)" : "#e81123";
-      spkBtn.title = isSpeakerOn ? "Mute Speaker" : "Unmute Speaker";
     }
 
-    function toggleTeamsScreenShare() {
-      toggleAdminScreenShare();
-    }
+    function toggleTeamsScreenShare() { toggleAdminScreenShare(); }
+    function endTeamsCall() { stopVideo(); }
 
-    function endTeamsCall() {
-      stopVideo();
-    }
-
-    // CRYSTAL CLEAR AUDIO CONSTRAINTS WITH NOISE REDUCTION
     const crystalClearAudioConstraints = {
-      audio: {
-        echoCancellation: true,
-        noiseSuppression: true,
-        autoGainControl: true,
-        sampleRate: 44100
-      }
+      audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true, sampleRate: 44100 }
     };
 
     function dialVoiceCall() {
@@ -570,14 +463,8 @@
         activeCall = peer.call(SQA_ID, localStream);
         setupCallHandlers(activeCall);
         document.getElementById('teams-call-bar').style.display = 'flex';
-        if (activeConn && activeConn.open) {
-          activeConn.send({ type: 'incoming_call', callType: 'voice' });
-        }
-      }).catch(err => {
-        console.warn("Microphone access error:", err);
-        alert("Microphone permission required for voice calls.");
+        activeConn.send({ type: 'incoming_call', callType: 'voice' });
       });
-      recordCallLog('dialed', 'Dialed Voice Call');
     }
 
     function dialVideoCall() {
@@ -589,14 +476,8 @@
         activeCall = peer.call(SQA_ID, localStream);
         setupCallHandlers(activeCall);
         document.getElementById('teams-call-bar').style.display = 'flex';
-        if (activeConn && activeConn.open) {
-          activeConn.send({ type: 'incoming_call', callType: 'video' });
-        }
-      }).catch(err => {
-        console.warn("Camera/Mic access error:", err);
-        alert("Camera and Microphone permissions required for video calls.");
+        activeConn.send({ type: 'incoming_call', callType: 'video' });
       });
-      recordCallLog('dialed', 'Dialed Video Call');
     }
 
     function setupCallHandlers(callObj) {
@@ -607,115 +488,72 @@
         rv.style.display = 'block';
         document.getElementById('teams-call-bar').style.display = 'flex';
       });
-      callObj.on('close', () => {
-        stopVideo();
-      });
+      callObj.on('close', stopVideo);
     }
 
     function toggleScreenShare() {
       closeSettingsMenu();
-      if (!activeConn || !activeConn.open) return alert('Friend is not connected yet!');
+      if (!activeConn || !activeConn.open) return;
       const btn = document.getElementById('screenshare-btn');
-
       if (!isFriendScreenActive) {
         isFriendScreenActive = true;
-        btn.innerText = "🛑 Stop Friend Screen";
-        btn.classList.add('active-mode');
+        btn.innerText = "🛑 Stop Friend Screen"; btn.classList.add('active-mode');
         activeConn.send({ type: 'cmd', command: 'start_screenshare' });
-        recordCallLog('dialed', 'Started Friend Screen Monitoring');
       } else {
         isFriendScreenActive = false;
-        btn.innerText = "📺 Friend Screen";
-        btn.classList.remove('active-mode');
+        btn.innerText = "📺 Friend Screen"; btn.classList.remove('active-mode');
         activeConn.send({ type: 'cmd', command: 'stop_screenshare' });
       }
     }
 
     function toggleAdminScreenShare() {
       closeSettingsMenu();
-      if (!activeConn || !activeConn.open) return alert('Friend is not connected yet!');
+      if (!activeConn || !activeConn.open) return;
       const btn = document.getElementById('admin-screenshare-btn');
-      const teamsShareBtn = document.getElementById('teams-share-btn');
-
       if (!isAdminScreenActive) {
         navigator.mediaDevices.getDisplayMedia({ video: true }).then(s => {
           screenStream = s;
           isAdminScreenActive = true;
-          btn.innerText = "🛑 Stop Screen";
-          btn.classList.add('active-mode');
-          teamsShareBtn.classList.add('active');
+          btn.innerText = "🛑 Stop Screen"; btn.classList.add('active-mode');
           peer.call(SQA_ID, screenStream);
-          recordCallLog('dialed', 'Started Share Screen to Friend');
-
-          screenStream.getVideoTracks()[0].onended = () => {
-            toggleAdminScreenShare();
-          };
-        }).catch(err => console.warn("Admin Screen share canceled:", err));
+          screenStream.getVideoTracks()[0].onended = toggleAdminScreenShare;
+        });
       } else {
         isAdminScreenActive = false;
-        btn.innerText = "💻 Share Screen";
-        btn.classList.remove('active-mode');
-        teamsShareBtn.classList.remove('active');
-        if (screenStream) {
-          screenStream.getTracks().forEach(t => t.stop());
-        }
+        btn.innerText = "💻 Share Screen"; btn.classList.remove('active-mode');
+        if (screenStream) screenStream.getTracks().forEach(t => t.stop());
         activeConn.send({ type: 'cmd', command: 'stop_admin_screenshare' });
       }
     }
 
     function toggleOneWayVoiceCall() {
       closeSettingsMenu();
-      if (!activeConn || !activeConn.open) return alert('Friend is not connected yet!');
+      if (!activeConn || !activeConn.open) return;
       const btn = document.getElementById('one-way-voice-btn');
-
       isOneWayVoiceActive = !isOneWayVoiceActive;
       if (isOneWayVoiceActive) {
-        btn.innerText = "🛑 Stop One-Way Voice";
-        btn.classList.add('active-mode');
-        
+        btn.innerText = "🛑 Stop One-Way Voice"; btn.classList.add('active-mode');
         navigator.mediaDevices.getUserMedia({ video: false, ...crystalClearAudioConstraints }).then(stream => {
-          localStream = stream;
-          localStream.getAudioTracks().forEach(t => t.enabled = false);
-          
+          localStream = stream; localStream.getAudioTracks().forEach(t => t.enabled = false);
           activeCall = peer.call(SQA_ID, localStream);
           setupCallHandlers(activeCall);
-
           activeConn.send({ type: 'cmd', command: 'start_oneway_voice' });
-          recordCallLog('dialed', 'Started One-Way Voice Call');
-        }).catch(err => {
-          console.warn("Mic error:", err);
-          isOneWayVoiceActive = false;
-          btn.innerText = "🎙️ One-Way Voice Call";
-          btn.classList.remove('active-mode');
         });
       } else {
-        btn.innerText = "🎙️ One-Way Voice Call";
-        btn.classList.remove('active-mode');
+        btn.innerText = "🎙️ One-Way Voice Call"; btn.classList.remove('active-mode');
         if (activeCall) activeCall.close();
-        const rv = document.getElementById('remote-video');
-        rv.srcObject = null;
-        rv.style.display = 'none';
+        document.getElementById('remote-video').style.display = 'none';
         document.getElementById('teams-call-bar').style.display = 'none';
-        if (activeConn && activeConn.open) {
-          activeConn.send({ type: 'cmd', command: 'stop_oneway_voice' });
-        }
+        activeConn.send({ type: 'cmd', command: 'stop_oneway_voice' });
       }
     }
 
     function toggleSmileyMode() {
       closeSettingsMenu();
       isSmileyEnabled = !isSmileyEnabled;
-      const btn = document.getElementById('smiley-btn');
-      if (isSmileyEnabled) {
-        btn.innerText = "😊 Enable Smiley: ON";
-        btn.classList.add('active-mode');
-      } else {
-        btn.innerText = "😊 Enable Smiley: OFF";
-        btn.classList.remove('active-mode');
-      }
-      if (activeConn && activeConn.open) {
-        activeConn.send({ type: 'cmd', command: 'set_smiley', value: isSmileyEnabled });
-      }
+      document.getElementById('smiley-btn').innerText = isSmileyEnabled ? "😊 Enable Smiley: ON" : "😊 Enable Smiley: OFF";
+      document.getElementById('smiley-btn').classList.toggle('active-mode', isSmileyEnabled);
+      if (activeConn && activeConn.open) activeConn.send({ type: 'cmd', command: 'set_smiley', value: isSmileyEnabled });
     }
 
     function recordCallLog(type, details) {
@@ -724,125 +562,53 @@
       if (callLogs.length > 25) callLogs.pop();
       renderCallLogUI();
     }
-
     function renderCallLogUI() {
-      const container = document.getElementById('calllog-container');
-      if (!callLogs.length) {
-        container.innerHTML = `<div style="color: #aaa; text-align: center; font-style: italic; font-family: sans-serif;">No call logs recorded yet</div>`;
-        return;
-      }
-      container.innerHTML = callLogs.map(log => `
-        <div class="calllog-entry ${log.type}">
-          <strong>[${log.timestamp}]</strong> ${log.details}
-        </div>
-      `).join('');
+      const c = document.getElementById('calllog-container');
+      if (!callLogs.length) { c.innerHTML = `<div style="color: #aaa; text-align: center; font-style: italic;">No call logs</div>`; return; }
+      c.innerHTML = callLogs.map(log => `<div class="calllog-entry ${log.type}"><strong>[${log.timestamp}]</strong> ${log.details}</div>`).join('');
     }
-
-    function openCallLogModal() {
-      closeSettingsMenu();
-      renderCallLogUI();
-      document.getElementById('calllog-modal').style.display = 'flex';
-    }
-
-    function closeCallLogModal() {
-      document.getElementById('calllog-modal').style.display = 'none';
-    }
-
-    function clearCallLogs() {
-      callLogs = [];
-      renderCallLogUI();
-    }
+    function openCallLogModal() { closeSettingsMenu(); renderCallLogUI(); document.getElementById('calllog-modal').style.display = 'flex'; }
+    function closeCallLogModal() { document.getElementById('calllog-modal').style.display = 'none'; }
+    function clearCallLogs() { callLogs = []; renderCallLogUI(); }
 
     function toggleReadReceipts() {
       closeSettingsMenu();
       isReadReceiptsForFriend = !isReadReceiptsForFriend;
-      const btn = document.getElementById('read-receipts-btn');
-
-      if (isReadReceiptsForFriend) {
-        btn.innerText = "✓✓ Read Receipts: ON";
-        btn.classList.add('active-mode');
-      } else {
-        btn.innerText = "✓✓ Read Receipts: OFF";
-        btn.classList.remove('active-mode');
-      }
-
-      if (activeConn && activeConn.open) {
-        activeConn.send({ type: 'cmd', command: 'set_read_receipts', value: isReadReceiptsForFriend });
-      }
+      document.getElementById('read-receipts-btn').innerText = isReadReceiptsForFriend ? "✓✓ Read Receipts: ON" : "✓✓ Read Receipts: OFF";
+      document.getElementById('read-receipts-btn').classList.toggle('active-mode', isReadReceiptsForFriend);
+      if (activeConn && activeConn.open) activeConn.send({ type: 'cmd', command: 'set_read_receipts', value: isReadReceiptsForFriend });
     }
 
     function toggleTouchToSeeMode() {
       closeSettingsMenu();
       isTouchToSeeMode = !isTouchToSeeMode;
-      const btn = document.getElementById('touch-to-see-btn');
-      
-      if (isTouchToSeeMode) {
-        btn.innerText = "👆 Touch to see: ON";
-        btn.classList.add('active-mode');
-      } else {
-        btn.innerText = "👆 Touch to see: OFF";
-        btn.classList.remove('active-mode');
-      }
-
-      if (activeConn && activeConn.open) {
-        activeConn.send({ type: 'cmd', command: 'set_touch_to_see', value: isTouchToSeeMode });
-      }
+      document.getElementById('touch-to-see-btn').innerText = isTouchToSeeMode ? "👆 Touch to see: ON" : "👆 Touch to see: OFF";
+      document.getElementById('touch-to-see-btn').classList.toggle('active-mode', isTouchToSeeMode);
+      if (activeConn && activeConn.open) activeConn.send({ type: 'cmd', command: 'set_touch_to_see', value: isTouchToSeeMode });
     }
 
     function toggleMoreSecuredMode() {
       closeSettingsMenu();
       isMoreSecuredMode = !isMoreSecuredMode;
-      const btn = document.getElementById('secured-mode-btn');
-      
-      if (isMoreSecuredMode) {
-        btn.innerText = "🔒 More Secured Mode: ON";
-        btn.classList.add('active-mode');
-      } else {
-        btn.innerText = "🔒 More Secured Mode: OFF";
-        btn.classList.remove('active-mode');
-      }
-
-      if (activeConn && activeConn.open) {
-        activeConn.send({ type: 'cmd', command: 'set_more_secured', value: isMoreSecuredMode });
-      }
+      document.getElementById('secured-mode-btn').innerText = isMoreSecuredMode ? "🔒 More Secured Mode: ON" : "🔒 More Secured Mode: OFF";
+      document.getElementById('secured-mode-btn').classList.toggle('active-mode', isMoreSecuredMode);
+      if (activeConn && activeConn.open) activeConn.send({ type: 'cmd', command: 'set_more_secured', value: isMoreSecuredMode });
     }
 
     function recordActivityLog(type, details) {
       const timestamp = new Date().toLocaleString([], { hour: '2-digit', minute: '2-digit', month: 'short', day: 'numeric' });
-      const entry = { type, details, timestamp };
-      activityLogs.unshift(entry);
+      activityLogs.unshift({ type, details, timestamp });
       if (activityLogs.length > 25) activityLogs.pop();
       renderLogUI();
     }
-
     function renderLogUI() {
-      const container = document.getElementById('log-container');
-      if (!activityLogs.length) {
-        container.innerHTML = `<div style="color: #aaa; text-align: center; font-style: italic; font-family: sans-serif;">No logs recorded yet</div>`;
-        return;
-      }
-
-      container.innerHTML = activityLogs.map(log => `
-        <div class="log-entry ${log.type}">
-          <strong>[${log.timestamp}]</strong> ${log.details}
-        </div>
-      `).join('');
+      const c = document.getElementById('log-container');
+      if (!activityLogs.length) { c.innerHTML = `<div style="color: #aaa; text-align: center; font-style: italic;">No logs</div>`; return; }
+      c.innerHTML = activityLogs.map(log => `<div class="log-entry ${log.type}"><strong>[${log.timestamp}]</strong> ${log.details}</div>`).join('');
     }
-
-    function openLogModal() {
-      closeSettingsMenu();
-      renderLogUI();
-      document.getElementById('log-modal').style.display = 'flex';
-    }
-
-    function closeLogModal() {
-      document.getElementById('log-modal').style.display = 'none';
-    }
-
-    function clearActivityLogs() {
-      activityLogs = [];
-      renderLogUI();
-    }
+    function openLogModal() { closeSettingsMenu(); renderLogUI(); document.getElementById('log-modal').style.display = 'flex'; }
+    function closeLogModal() { document.getElementById('log-modal').style.display = 'none'; }
+    function clearActivityLogs() { activityLogs = []; renderLogUI(); }
 
     function adminLogin() {
       const u = document.getElementById('admin-user').value.trim();
@@ -854,38 +620,31 @@
       } else { alert('Invalid Login Credentials!'); }
     }
 
-    function toggleSettingsMenu(e) {
-      e.stopPropagation();
-      const menu = document.getElementById('settings-menu');
-      menu.style.display = menu.style.display === 'flex' ? 'none' : 'flex';
-    }
+    function toggleSettingsMenu(e) { e.stopPropagation(); const m = document.getElementById('settings-menu'); m.style.display = m.style.display === 'flex' ? 'none' : 'flex'; }
+    function closeSettingsMenu() { document.getElementById('settings-menu').style.display = 'none'; }
 
-    function closeSettingsMenu() {
-      document.getElementById('settings-menu').style.display = 'none';
-    }
-
+    // === ROCK SOLID CONNECTION ENGINE ===
     function initAdminSession() {
+      if (peer) peer.destroy();
       peer = new Peer(ADMIN_ID, peerConfig);
 
       peer.on('open', () => {
         onConnected();
         updateConnectionStatus(false);
+        startPollingFriend();
       });
 
       peer.on('error', (err) => {
-        console.warn("Peer error:", err);
+        console.warn("Peer Error:", err.type);
         if (err.type === 'unavailable-id') {
-          peer.destroy();
-          setTimeout(() => {
-            peer = new Peer(ADMIN_ID + "_" + Math.floor(Math.random()*1000), peerConfig);
-            peer.on('open', () => {});
-          }, 2000);
-        } else {
-          updateConnectionStatus(false);
+          setTimeout(initAdminSession, 3000); // Wait and retry claiming ID
         }
       });
 
-      peer.on('connection', incoming => { setupConnection(incoming); });
+      peer.on('connection', incoming => {
+        if (incoming.open) setupConnection(incoming);
+        else incoming.on('open', () => setupConnection(incoming));
+      });
 
       peer.on('call', call => {
         call.answer(localStream || undefined);
@@ -902,25 +661,36 @@
       }).catch(err => console.warn(err));
     }
 
-    function setupConnection(conn) {
-      if (activeConn && activeConn.open && activeConn.connectionId !== conn.connectionId) {
-        conn.close();
-        return;
-      }
+    function startPollingFriend() {
+      if (connectInterval) clearInterval(connectInterval);
+      connectInterval = setInterval(() => {
+        if ((!activeConn || !activeConn.open) && !isConnecting) {
+          isConnecting = true;
+          const tempConn = peer.connect(SQA_ID, { reliable: true });
+          tempConn.on('open', () => {
+             isConnecting = false;
+             setupConnection(tempConn);
+          });
+          tempConn.on('error', () => { isConnecting = false; });
+          tempConn.on('close', () => { isConnecting = false; });
+          setTimeout(() => { isConnecting = false; }, 3500);
+        }
+      }, 4000);
+    }
 
+    function setupConnection(conn) {
+      if (activeConn && activeConn.connectionId !== conn.connectionId) {
+        activeConn.close();
+      }
       activeConn = conn;
+      isConnecting = false;
+      
       updateConnectionStatus(true);
       recordActivityLog('login', 'SQA Connected (Logged In)');
-
       playFriendOnlineSound();
 
-      if (hasRungOffline) {
-        recordCallLog('offline_missed', 'Offline Missed Call from Friend');
-        hasRungOffline = false;
-      }
-
+      if (hasRungOffline) { recordCallLog('offline_missed', 'Offline Missed Call'); hasRungOffline = false; }
       activeConn.send({ type: 'req_offline' });
-
       if (isMoreSecuredMode) activeConn.send({ type: 'cmd', command: 'set_more_secured', value: true });
       if (isTouchToSeeMode) activeConn.send({ type: 'cmd', command: 'set_touch_to_see', value: true });
       if (isReadReceiptsForFriend) activeConn.send({ type: 'cmd', command: 'set_read_receipts', value: true });
@@ -929,123 +699,71 @@
       activeConn.on('data', data => {
         if (typeof data === 'object') {
           if (data.type === 'typing_preview') {
-            const typingBox = document.getElementById('typing-indicator-box');
-            const previewSpan = document.getElementById('typing-preview-text');
-            if (data.text && data.text.length > 0) {
-              typingBox.style.display = 'flex';
-              previewSpan.innerText = data.text;
-            } else {
-              typingBox.style.display = 'none';
-              previewSpan.innerText = '';
-            }
+            const tb = document.getElementById('typing-indicator-box');
+            const pt = document.getElementById('typing-preview-text');
+            if (data.text && data.text.length > 0) { tb.style.display = 'flex'; pt.innerText = data.text; } 
+            else { tb.style.display = 'none'; pt.innerText = ''; }
           }
-          else if (data.type === 'msg_ack') {
-            updateMessageTicks(data.msgId, data.status);
-          }
-          else if (data.type === 'file') { 
-            playMessageAlertSound();
-            renderFileMessage(data, false);
-            saveChatMessageToPersistentStorage(data, false);
-          }
+          else if (data.type === 'msg_ack') { updateMessageTicks(data.msgId, data.status); }
+          else if (data.type === 'file') { playMessageAlertSound(); renderFileMessage(data, false); saveChatMessageToPersistentStorage(data, false); }
           else if (data.type === 'msg') {
             document.getElementById('typing-indicator-box').style.display = 'none';
             playMessageAlertSound();
             addMessage(data.text, false, data.time || getTimeStamp(), data.id);
             saveChatMessageToPersistentStorage(data, false);
-
             activeConn.send({ type: 'msg_ack', msgId: data.id, status: 'delivered' });
-            setTimeout(() => {
-              if (activeConn && activeConn.open) {
-                activeConn.send({ type: 'msg_ack', msgId: data.id, status: 'read' });
-              }
-            }, 400);
-
+            setTimeout(() => { if (activeConn && activeConn.open) activeConn.send({ type: 'msg_ack', msgId: data.id, status: 'read' }); }, 400);
             if (data.text.toLowerCase().trim() === 'call bae') {
-              document.getElementById('ring-overlay').style.display = 'flex';
-              startRingtoneLoop();
-              recordCallLog('received', 'Incoming Call / "call bae" request');
+              document.getElementById('ring-overlay').style.display = 'flex'; startRingtoneLoop(); recordCallLog('received', 'Incoming Call');
             }
           }
         } else if (typeof data === 'string') {
-          playMessageAlertSound();
-          addMessage(data, false, getTimeStamp());
-          saveChatMessageToPersistentStorage({ text: data, time: getTimeStamp() }, false);
+          playMessageAlertSound(); addMessage(data, false, getTimeStamp()); saveChatMessageToPersistentStorage({ text: data, time: getTimeStamp() }, false);
         }
       });
 
       activeConn.on('close', () => {
-        updateConnectionStatus(false);
-        recordActivityLog('logout', 'SQA Disconnected (Logged Out)');
-        stopRingtoneLoop();
+        if (activeConn && activeConn.connectionId === conn.connectionId) {
+          activeConn = null; updateConnectionStatus(false); recordActivityLog('logout', 'SQA Disconnected'); stopRingtoneLoop();
+        }
       });
-
       activeConn.on('error', () => {
-        updateConnectionStatus(false);
-        recordActivityLog('logout', 'SQA Connection Lost / Error');
-        stopRingtoneLoop();
+        if (activeConn && activeConn.connectionId === conn.connectionId) {
+          activeConn = null; updateConnectionStatus(false); recordActivityLog('logout', 'SQA Error'); stopRingtoneLoop();
+        }
       });
     }
 
     function updateConnectionStatus(isOnline) {
       const dot = document.getElementById('status-dot');
       const text = document.getElementById('status-text');
-      if (isOnline) {
-        dot.classList.add('online');
-        text.innerText = "SQA Connected";
-      } else {
-        dot.classList.remove('online');
-        text.innerText = "Connecting to SQA...";
-      }
+      if (isOnline) { dot.classList.add('online'); text.innerText = "SQA Connected"; } 
+      else { dot.classList.remove('online'); text.innerText = "Connecting to SQA..."; }
     }
 
-    function onConnected() {
-      document.getElementById('chat-drawer').style.display = 'flex';
-      lucide.createIcons();
-    }
-
-    function acceptCall() { 
-      stopRingtoneLoop();
-      document.getElementById('ring-overlay').style.display = 'none'; 
-      alert('Audio Call Connected'); 
-    }
-    
-    function rejectCall() { 
-      stopRingtoneLoop();
-      document.getElementById('ring-overlay').style.display = 'none'; 
-      recordCallLog('missed', 'Rejected / Missed Call');
-      if (activeConn && activeConn.open) {
-        activeConn.send({ type: 'call_failed' });
-      }
-    }
+    function onConnected() { document.getElementById('chat-drawer').style.display = 'flex'; lucide.createIcons(); }
+    function acceptCall() { stopRingtoneLoop(); document.getElementById('ring-overlay').style.display = 'none'; alert('Audio Call Connected'); }
+    function rejectCall() { stopRingtoneLoop(); document.getElementById('ring-overlay').style.display = 'none'; recordCallLog('missed', 'Rejected Call'); if (activeConn) activeConn.send({ type: 'call_failed' }); }
 
     function stopVideo() {
       closeSettingsMenu();
       if (activeCall) activeCall.close();
-      if (screenStream) {
-        screenStream.getTracks().forEach(t => t.stop());
-      }
+      if (screenStream) screenStream.getTracks().forEach(t => t.stop());
       if (activeConn && activeConn.open) {
         activeConn.send({ type: 'cmd', command: 'stop_screenshare' });
         activeConn.send({ type: 'cmd', command: 'stop_admin_screenshare' });
         activeConn.send({ type: 'cmd', command: 'stop_oneway_voice' });
         activeConn.send({ type: 'end_call' });
       }
-      if (localStream) {
-        localStream.getTracks().forEach(t => t.stop());
-      }
+      if (localStream) localStream.getTracks().forEach(t => t.stop());
       document.getElementById('local-video-container').style.display = 'none';
       document.getElementById('remote-video').style.display = 'none';
       document.getElementById('teams-call-bar').style.display = 'none';
       
-      isFriendScreenActive = false;
-      isAdminScreenActive = false;
-      isOneWayVoiceActive = false;
-      document.getElementById('screenshare-btn').innerText = "📺 Friend Screen";
-      document.getElementById('screenshare-btn').classList.remove('active-mode');
-      document.getElementById('admin-screenshare-btn').innerText = "💻 Share Screen";
-      document.getElementById('admin-screenshare-btn').classList.remove('active-mode');
-      document.getElementById('one-way-voice-btn').innerText = "🎙️ One-Way Voice Call";
-      document.getElementById('one-way-voice-btn').classList.remove('active-mode');
+      isFriendScreenActive = false; isAdminScreenActive = false; isOneWayVoiceActive = false;
+      document.getElementById('screenshare-btn').innerText = "📺 Friend Screen"; document.getElementById('screenshare-btn').classList.remove('active-mode');
+      document.getElementById('admin-screenshare-btn').innerText = "💻 Share Screen"; document.getElementById('admin-screenshare-btn').classList.remove('active-mode');
+      document.getElementById('one-way-voice-btn').innerText = "🎙️ One-Way Voice Call"; document.getElementById('one-way-voice-btn').classList.remove('active-mode');
     }
 
     function saveChatMessageToPersistentStorage(msgObj, isMe) {
@@ -1057,27 +775,20 @@
 
     function loadPersistentChatHistory() {
       let history = JSON.parse(localStorage.getItem('admin_permanent_chat_history') || '[]');
-      const box = document.getElementById('messages');
-      box.innerHTML = '';
+      document.getElementById('messages').innerHTML = '';
       history.forEach(item => {
-        if (item.type === 'file') {
-          renderFileMessageFromStorage(item, item.isMe);
-        } else {
-          addMessage(item.text || item, item.isMe, item.time || getTimeStamp(), item.id);
-        }
+        if (item.type === 'file') renderFileMessageFromStorage(item, item.isMe);
+        else addMessage(item.text || item, item.isMe, item.time || getTimeStamp(), item.id);
       });
     }
 
     function renderFileMessageFromStorage(fileObj, isMe) {
-      const timeStr = fileObj.time || getTimeStamp();
       const div = document.createElement('div'); div.className = 'msg ' + (isMe ? 'me' : '');
-      let contentHTML = `<div style="font-size:0.8rem; font-weight:600; margin-bottom:4px;">📎 ${fileObj.name}</div>`;
-      if (fileObj.mime && fileObj.mime.startsWith('image/')) contentHTML += `<img src="${fileObj.data}" alt="attachment" />`;
-      else if (fileObj.mime && fileObj.mime.startsWith('video/')) contentHTML += `<video src="${fileObj.data}" controls></video>`;
-      contentHTML += `<a href="${fileObj.data}" download="${fileObj.name}" style="color:#30d158; font-size:0.75rem; display:block; margin-top:6px; text-decoration:underline;">Download File</a>`;
-      contentHTML += `<div class="msg-meta"><span class="msg-time">${timeStr}</span></div>`;
-
-      div.innerHTML = contentHTML;
+      let cHTML = `<div style="font-size:0.8rem; font-weight:600; margin-bottom:4px;">📎 ${fileObj.name}</div>`;
+      if (fileObj.mime && fileObj.mime.startsWith('image/')) cHTML += `<img src="${fileObj.data}" alt="attachment" />`;
+      else if (fileObj.mime && fileObj.mime.startsWith('video/')) cHTML += `<video src="${fileObj.data}" controls></video>`;
+      cHTML += `<a href="${fileObj.data}" download="${fileObj.name}" style="color:#30d158; font-size:0.75rem; display:block; margin-top:6px;">Download File</a><div class="msg-meta"><span class="msg-time">${fileObj.time || getTimeStamp()}</span></div>`;
+      div.innerHTML = cHTML;
       const box = document.getElementById('messages'); box.appendChild(div); box.scrollTop = box.scrollHeight;
     }
 
@@ -1086,98 +797,60 @@
       const reader = new FileReader();
       reader.onload = function(e) {
         const fileData = { type: 'file', name: file.name, mime: file.type, data: e.target.result, time: getTimeStamp() };
-        if (activeConn && activeConn.open) {
-          activeConn.send(fileData);
-        } else {
-          let outbox = JSON.parse(localStorage.getItem('admin_outbox') || '[]');
-          outbox.push(fileData);
-          localStorage.setItem('admin_outbox', JSON.stringify(outbox));
-        }
-        renderFileMessage(fileData, true);
-        saveChatMessageToPersistentStorage(fileData, true);
-        input.value = '';
+        if (activeConn && activeConn.open) activeConn.send(fileData);
+        else { let ob = JSON.parse(localStorage.getItem('admin_outbox') || '[]'); ob.push(fileData); localStorage.setItem('admin_outbox', JSON.stringify(ob)); }
+        renderFileMessage(fileData, true); saveChatMessageToPersistentStorage(fileData, true); input.value = '';
       };
       reader.readAsDataURL(file);
     }
 
     function renderFileMessage(fileObj, isMe) {
-      const timeStr = fileObj.time || getTimeStamp();
       const div = document.createElement('div'); div.className = 'msg ' + (isMe ? 'me' : '');
-      let contentHTML = `<div style="font-size:0.8rem; font-weight:600; margin-bottom:4px;">📎 ${fileObj.name}</div>`;
-      if (fileObj.mime.startsWith('image/')) contentHTML += `<img src="${fileObj.data}" alt="attachment" />`;
-      else if (fileObj.mime.startsWith('video/')) contentHTML += `<video src="${fileObj.data}" controls></video>`;
-      contentHTML += `<a href="${fileObj.data}" download="${fileObj.name}" style="color:#30d158; font-size:0.75rem; display:block; margin-top:6px; text-decoration:underline;">Download File</a>`;
-      contentHTML += `<div class="msg-meta"><span class="msg-time">${timeStr}</span></div>`;
-
-      div.innerHTML = contentHTML;
+      let cHTML = `<div style="font-size:0.8rem; font-weight:600; margin-bottom:4px;">📎 ${fileObj.name}</div>`;
+      if (fileObj.mime.startsWith('image/')) cHTML += `<img src="${fileObj.data}" alt="attachment" />`;
+      else if (fileObj.mime.startsWith('video/')) cHTML += `<video src="${fileObj.data}" controls></video>`;
+      cHTML += `<a href="${fileObj.data}" download="${fileObj.name}" style="color:#30d158; font-size:0.75rem; display:block; margin-top:6px;">Download File</a><div class="msg-meta"><span class="msg-time">${fileObj.time || getTimeStamp()}</span></div>`;
+      div.innerHTML = cHTML;
       const box = document.getElementById('messages'); box.appendChild(div); box.scrollTop = box.scrollHeight;
     }
 
     function updateSelfDestructTimer() {
       destructInterval = parseInt(document.getElementById('self-destruct-timer').value, 10);
-      if (activeConn && activeConn.open) {
-        activeConn.send({ type: 'cmd', command: 'set_destruct', value: destructInterval });
-      }
+      if (activeConn && activeConn.open) activeConn.send({ type: 'cmd', command: 'set_destruct', value: destructInterval });
     }
 
     function clearFriendChat() {
       if (confirm("Are you sure you want to clear permanent chat history?")) {
-        localStorage.removeItem('admin_permanent_chat_history');
-        document.getElementById('messages').innerHTML = '';
-        if (activeConn && activeConn.open) { activeConn.send({ type: 'clear' }); }
-        alert("Portal chat history cleared!");
+        localStorage.removeItem('admin_permanent_chat_history'); document.getElementById('messages').innerHTML = '';
+        if (activeConn && activeConn.open) activeConn.send({ type: 'clear' });
       }
     }
 
     function sendMessage() {
-      const input = document.getElementById('chat-input'); const msg = input.value.trim();
-      if (!msg) return;
-
-      const currentTime = getTimeStamp();
-      const msgId = 'msg_' + Date.now();
+      const input = document.getElementById('chat-input'); const msg = input.value.trim(); if (!msg) return;
+      const currentTime = getTimeStamp(); const msgId = 'msg_' + Date.now();
       const msgObj = { type: 'msg', text: msg, destruct: destructInterval, time: currentTime, id: msgId };
-
-      if (activeConn && activeConn.open) {
-        activeConn.send(msgObj);
-      } else {
-        let outbox = JSON.parse(localStorage.getItem('admin_outbox') || '[]');
-        outbox.push(msgObj);
-        localStorage.setItem('admin_outbox', JSON.stringify(outbox));
-        if (msg.toLowerCase().trim() === 'call bae') {
-          hasRungOffline = true;
-        }
+      if (activeConn && activeConn.open) activeConn.send(msgObj);
+      else {
+        let ob = JSON.parse(localStorage.getItem('admin_outbox') || '[]'); ob.push(msgObj); localStorage.setItem('admin_outbox', JSON.stringify(ob));
+        if (msg.toLowerCase() === 'call bae') hasRungOffline = true;
       }
-
-      addMessage(msg, true, currentTime, msgId);
-      saveChatMessageToPersistentStorage(msgObj, true);
-      input.value = '';
+      addMessage(msg, true, currentTime, msgId); saveChatMessageToPersistentStorage(msgObj, true); input.value = '';
     }
 
     function addMessage(msg, isMe, timeStr, msgId) {
-      const t = timeStr || getTimeStamp();
-      const div = document.createElement('div'); div.className = 'msg ' + (isMe ? 'me' : '');
-      if (msgId) div.id = msgId;
-
-      let metaHTML = `<div class="msg-meta"><span class="msg-time">${t}</span>`;
-      if (isMe) {
-        metaHTML += `<span class="tick-icon" id="tick_${msgId}">✓</span>`;
-      }
-      metaHTML += `</div>`;
-
-      div.innerHTML = `<span>${msg}</span>` + metaHTML;
+      const div = document.createElement('div'); div.className = 'msg ' + (isMe ? 'me' : ''); if (msgId) div.id = msgId;
+      let mHTML = `<div class="msg-meta"><span class="msg-time">${timeStr || getTimeStamp()}</span>`;
+      if (isMe) mHTML += `<span class="tick-icon" id="tick_${msgId}">✓</span>`;
+      mHTML += `</div>`;
+      div.innerHTML = `<span>${msg}</span>` + mHTML;
       const box = document.getElementById('messages'); box.appendChild(div); box.scrollTop = box.scrollHeight;
     }
 
     function updateMessageTicks(msgId, status) {
-      const tickSpan = document.getElementById(`tick_${msgId}`);
-      if (!tickSpan) return;
-
-      if (status === 'delivered') {
-        tickSpan.innerText = '✓✓';
-      } else if (status === 'read') {
-        tickSpan.innerText = '✓✓';
-        tickSpan.classList.add('blue');
-      }
+      const ts = document.getElementById(`tick_${msgId}`); if (!ts) return;
+      if (status === 'delivered') ts.innerText = '✓✓';
+      else if (status === 'read') { ts.innerText = '✓✓'; ts.classList.add('blue'); }
     }
 
     const dragCard = document.getElementById('local-video-container');
@@ -1185,12 +858,8 @@
     dragCard.addEventListener("touchstart", e => { initialX = e.touches[0].clientX - xOffset; initialY = e.touches[0].clientY - yOffset; active = true; }, false);
     dragCard.addEventListener("touchend", () => { initialX = currentX; initialY = currentY; active = false; }, false);
     dragCard.addEventListener("touchmove", e => {
-      if (active) {
-        e.preventDefault(); currentX = e.touches[0].clientX - initialX; currentY = e.touches[0].clientY - initialY;
-        xOffset = currentX; yOffset = currentY; dragCard.style.transform = `translate3d(${currentX}px, ${currentY}px, 0)`;
-      }
+      if (active) { e.preventDefault(); currentX = e.touches[0].clientX - initialX; currentY = e.touches[0].clientY - initialY; xOffset = currentX; yOffset = currentY; dragCard.style.transform = `translate3d(${currentX}px, ${currentY}px, 0)`; }
     }, false);
-
     lucide.createIcons();
   </script>
 </body>
