@@ -340,10 +340,16 @@
 
     // Private Military-Grade Render Server Configuration
     const peerConfig = {
-    host: 'teams-6yw1.onrender.com', // Your private Render server
-    port: 443,                       // Standard secure web port
-    secure: true,                    // Forces encrypted wss:// connection
-    path: '/'                        // The route we set up in server.js
+      host: 'teams-6yw1.onrender.com',
+      port: 443,
+      path: '/',
+      secure: true,
+      config: { 
+        iceServers: [
+          { urls: 'stun:stun.l.google.com:19302' }, 
+          { urls: 'stun:stun1.l.google.com:19302' }
+        ] 
+      }
     };
 
     let audioCtx = null;
