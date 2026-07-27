@@ -249,6 +249,7 @@
         </div>
 
         <div class="settings-menu" id="settings-menu" onclick="event.stopPropagation()">
+          <button class="menu-item" id="item-header-vis" onclick="toggleHeaderVisibility()"><i data-lucide="eye-off"></i> Show Header: OFF</button>
           <button class="menu-item" id="item-record" onclick="toggleScreenRecording()"><i data-lucide="video"></i> Start Recording</button>
           <button class="menu-item" id="item-export" onclick="exportChatHistory()"><i data-lucide="download"></i> Export Chat (TXT)</button>
           <button class="menu-item" id="item-backup" onclick="toggleAutoBackup()"><i data-lucide="refresh-cw"></i> Auto-Backup: OFF</button>
@@ -291,7 +292,7 @@
     let currentCallType = 'voice', callDurationTimer = null, callSeconds = 0;
     
     let destructInterval = 0, activityLogs = [], callLogs = [];
-    let isFriendCallAllowed = false;
+    let isFriendCallAllowed = false, isHeaderVisible = false;
     let isCallMuted = false, isCamOff = false, isFriendScreenActive = false, isAdminScreenActive = false;
     let ringtoneInterval = null, hasRungOffline = false, isAutoBackupEnabled = false;
 
@@ -352,7 +353,6 @@
       rContainer.innerHTML = `<span>${emoji}</span>`;
     }
 
-    // EDIT MESSAGE FEATURE
     function handleMessageClick(msgId, isMe, e) {
       if (!isMe) { openReactionBar(msgId, e); return; }
       let action = prompt("Choose action:\n1. Edit message\n2. React with emoji", "1");
@@ -432,7 +432,7 @@
       navigator.mediaDevices.getUserMedia(voiceOnlyConstraints).then(stream => {
         localStream = stream; activeCall = peer.call(friendDynamicId, localStream, { metadata: { type: 'voice' } }); 
         setupCallHandlers(activeCall, 'voice'); showCallUI('voice', true);
-        if(activeConn) activeConn.send({ type: 'incoming_call', callType: 'voice' }); recordCallLog('dialed', 'Dialed Voice Call');
+        recordCallLog('dialed', 'Dialed Voice Call');
       }).catch(err => { alert("Mic required."); });
     }
 
@@ -442,18 +442,31 @@
         localStream = stream; document.getElementById('local-video').srcObject = stream;
         activeCall = peer.call(friendDynamicId, localStream, { metadata: { type: 'video' } }); 
         setupCallHandlers(activeCall, 'video'); showCallUI('video', true);
-        if(activeConn) activeConn.send({ type: 'incoming_call', callType: 'video' }); recordCallLog('dialed', 'Dialed Video Call');
+        recordCallLog('dialed', 'Dialed Video Call');
       }).catch(err => { alert("Camera required."); });
     }
 
     function setupCallHandlers(callObj, type) {
       callObj.on('stream', remoteStream => {
-        const rv = document.getElementById('remote-video'); const ra = document.getElementById('remote-audio');
+        const rv = document.getElementById('remote-video');
+        const ra = document.getElementById('remote-audio');
+        
         if (type === 'video' || type === 'screenshare') { 
-          if (remoteStream.getVideoTracks().length > 0) rv.srcObject = new MediaStream(remoteStream.getVideoTracks()); rv.muted = false; 
-        } else { rv.srcObject = null; }
-        if (remoteStream.getAudioTracks().length > 0) { ra.srcObject = new MediaStream(remoteStream.getAudioTracks()); ra.muted = false; }
-        if (document.getElementById('call-ui-title').innerText.includes("Calling")) { document.getElementById('call-ui-title').innerText = "Audio Call"; } startCallTimer();
+          rv.srcObject = remoteStream;
+          rv.muted = true; 
+          rv.play().catch(e=>{});
+        } else { 
+          rv.srcObject = null; 
+        }
+
+        ra.srcObject = remoteStream;
+        ra.muted = false;
+        ra.play().catch(e=>{});
+
+        if (document.getElementById('call-ui-title').innerText.includes("Calling")) { 
+            document.getElementById('call-ui-title').innerText = (type === 'video') ? "Video Call" : "Audio Call"; 
+        }
+        startCallTimer();
       });
       callObj.on('close', endTeamsCall); callObj.on('error', endTeamsCall);
     }
@@ -498,6 +511,14 @@
       btn.innerHTML = `<i data-lucide="phone-call"></i> Allow Friend Calls: ${isFriendCallAllowed ? 'ON' : 'OFF'}`;
       isFriendCallAllowed ? btn.classList.add('active-mode') : btn.classList.remove('active-mode');
       if (activeConn && activeConn.open) activeConn.send({ type: 'cmd', command: 'set_friend_call_access', value: isFriendCallAllowed });
+      lucide.createIcons();
+    }
+
+    function toggleHeaderVisibility() {
+      closeSettingsMenu(); isHeaderVisible = !isHeaderVisible; const btn = document.getElementById('item-header-vis');
+      btn.innerHTML = `<i data-lucide="${isHeaderVisible ? 'eye' : 'eye-off'}"></i> Show Header: ${isHeaderVisible ? 'ON' : 'OFF'}`;
+      isHeaderVisible ? btn.classList.add('active-mode') : btn.classList.remove('active-mode');
+      if (activeConn && activeConn.open) activeConn.send({ type: 'cmd', command: 'set_header_visibility', value: isHeaderVisible });
       lucide.createIcons();
     }
 
@@ -547,12 +568,15 @@
     function setupConnection(conn) {
       if (activeConn && activeConn.open) { activeConn.close(); } activeConn = conn; friendDynamicId = conn.peer; 
       
+      updateConnectionStatus(true); 
+      
       const onReady = () => {
         updateConnectionStatus(true); recordActivityLog('login', 'Connected'); playFriendOnlineSound();
         if (hasRungOffline) { recordCallLog('offline_missed', 'Offline Missed Call'); hasRungOffline = false; }
         
         activeConn.send({ type: 'req_offline' });
         activeConn.send({ type: 'cmd', command: 'set_friend_call_access', value: isFriendCallAllowed }); 
+        activeConn.send({ type: 'cmd', command: 'set_header_visibility', value: isHeaderVisible }); 
         
         setTimeout(() => {
           let outbox = JSON.parse(localStorage.getItem('admin_outbox') || '[]');

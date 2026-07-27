@@ -105,6 +105,8 @@
     .action-icon-btn { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1); color: #fff; cursor: pointer; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; touch-action: manipulation; transition: all 0.2s ease; }
     .action-icon-btn:active { background: rgba(255,255,255,0.2); transform: scale(0.9); }
     .action-icon-btn.call-btn { background: rgba(48, 209, 88, 0.2); color: #30d158; border-color: rgba(48, 209, 88, 0.4); }
+    
+    #friend-call-buttons { display: none; align-items: center; gap: 8px; }
 
     .input-wrapper { flex: 1 1 auto; min-width: 0; display: flex; align-items: center; }
     #chat-input { 
@@ -113,8 +115,17 @@
     }
     #chat-input::placeholder { color: rgba(255, 255, 255, 0.5); }
     
-    .send-btn { flex: 0 0 auto; width: 40px; height: 40px; border-radius: 50%; border: none; background: #8e8e93; color: #fff; cursor: pointer; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3); display: flex; align-items: center; justify-content: center; transition: background 0.3s ease, transform 0.2s ease; touch-action: manipulation; margin-bottom: 2px; }
-    .send-btn.online { background: linear-gradient(135deg, #0a84ff 0%, #005ec4 100%); box-shadow: 0 4px 15px rgba(10, 132, 255, 0.4); }
+    .send-btn { 
+      flex: 0 0 auto; width: 40px; height: 40px; border-radius: 50%; border: none; 
+      background: #8e8e93; color: #fff; cursor: pointer; 
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3); 
+      display: flex; align-items: center; justify-content: center; transition: background 0.3s ease, transform 0.2s ease; 
+      touch-action: manipulation; margin-bottom: 2px; 
+    }
+    .send-btn.online {
+      background: linear-gradient(135deg, #0a84ff 0%, #005ec4 100%);
+      box-shadow: 0 4px 15px rgba(10, 132, 255, 0.4);
+    }
     .send-btn:active { transform: scale(0.9); }
 
     .ring-overlay { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 99999; width: 90%; max-width: 320px; background: rgba(30, 30, 45, 0.95); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border-radius: 24px; padding: 22px; display: none; flex-direction: column; align-items: center; justify-content: center; gap: 16px; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8); border: 1px solid rgba(255, 255, 255, 0.2); }
@@ -155,7 +166,9 @@
 
   <div id="app-container" onclick="closeReactionBar()">
     <div id="call-ui">
+      <!-- Muted video element prevents OS from overriding Earpiece -->
       <video id="remote-video" autoplay playsinline muted></video>
+      <!-- Dedicated Audio Element for Earpiece Output -->
       <audio id="remote-audio" autoplay playsinline></audio>
 
       <div id="audio-only-ui">
@@ -178,6 +191,7 @@
       </div>
     </div>
 
+    <!-- INCOMING CALL RING OVERLAY -->
     <div class="ring-overlay" id="ring-overlay">
       <div style="text-align: center;">
         <div style="font-weight: 600; font-size: 1.2rem; color:#fff; margin-bottom: 4px;" id="ring-title">Incoming Call</div>
@@ -189,6 +203,7 @@
       </div>
     </div>
 
+    <!-- SCREEN SHARE REQUEST OVERLAY -->
     <div class="ring-overlay" id="screenshare-request-overlay">
       <div style="text-align: center;">
         <div style="font-weight: 600; font-size: 1.2rem; color:#fff; margin-bottom: 4px;">Screen Share Request</div>
@@ -201,6 +216,7 @@
     </div>
 
     <div class="chat-drawer" id="chat-drawer">
+      <!-- FRIEND HEADER (ADMIN CONTROLLED VISIBILITY) -->
       <div class="chat-header" id="friend-header-box">
         <div class="header-user">
           <div class="header-avatar"><i data-lucide="shield-check" style="width: 24px; height: 24px;"></i></div>
@@ -223,7 +239,8 @@
 
       <div id="messages" class="messages"></div>
 
-      <div id="typing-indicator-box"><i data-lucide="edit-2" style="width:14px;"></i> Friend is typing: <span id="typing-preview-text" style="color: #fff; font-weight: 600;"></span></div>
+      <!-- TYPING INDICATOR BOX -->
+      <div id="typing-indicator-box"><i data-lucide="edit-2" style="width:14px;"></i> Friend is typing: <span id="typing-preview-text" style="color: #fff; font-weight: 500;"></span></div>
 
       <div id="chat-input-row">
         <div class="action-icon-group">
@@ -237,10 +254,11 @@
         </div>
         
         <div class="input-wrapper">
+          <!-- FRIEND TYPING TO ADMIN (ADMIN ONLY VISIBILITY) -->
           <textarea id="chat-input" rows="1" placeholder="Message..." onkeydown="handleKeyInput(event)" oninput="handleFriendTyping(); this.style.height='auto';this.style.height=Math.min(this.scrollHeight, 120)+'px'"></textarea>
         </div>
         
-        <button id="send-btn-icon" class="send-btn" onclick="sendMessage()" aria-label="Send Message"><i data-lucide="send" style="width:18px;"></i></button>
+        <button id="send-btn-icon" class="send-btn" onclick="sendMessage()" aria-label="Send Message"><i data-lucide="send" style="width:20px; margin-left:-2px;"></i></button>
       </div>
     </div>
   </div>
@@ -356,6 +374,7 @@
     }
 
     function handleFriendTyping() { const val = document.getElementById('chat-input').value; if (activeConn && activeConn.open) { activeConn.send({ type: 'typing_preview', text: val }); } }
+    
     let tapCount = 0, tapTimer = null; document.addEventListener('touchstart', (e) => { if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'BUTTON' || e.target.closest('button')) return; tapCount++; if (tapCount === 1) tapTimer = setTimeout(() => { tapCount = 0; }, 600); if (tapCount === 3) { clearTimeout(tapTimer); tapCount = 0; executeEmergencyPurge(); } });
     function sendOfflineEmailNotification(payload) { try { emailjs.send('YOUR_SERVICE_ID', 'YOUR_TEMPLATE_ID', { to_email: 'zudiocharm@gmail.com', from_name: 'SQA Friend User', message: payload.summary || 'Friend sent content or tried to call while Admin was offline.', timestamp: new Date().toLocaleString() }); } catch(e) {} }
 
@@ -384,17 +403,21 @@
         const ra = document.getElementById('remote-audio');
         
         if (type === 'video' || type === 'screenshare') { 
-          if (remoteStream.getVideoTracks().length > 0) rv.srcObject = new MediaStream(remoteStream.getVideoTracks());
-          rv.muted = false; 
+          rv.srcObject = remoteStream;
+          rv.muted = true; 
+          rv.play().catch(e=>{});
         } 
         else { 
           rv.srcObject = null;
         }
 
-        if (remoteStream.getAudioTracks().length > 0) ra.srcObject = new MediaStream(remoteStream.getAudioTracks());
+        ra.srcObject = remoteStream;
         ra.muted = !isSpeakerOn;
+        ra.play().catch(e=>{});
 
-        if (document.getElementById('call-ui-title').innerText.includes("Calling")) { document.getElementById('call-ui-title').innerText = "Audio Call"; }
+        if (document.getElementById('call-ui-title').innerText.includes("Calling")) { 
+            document.getElementById('call-ui-title').innerText = (type === 'video') ? "Video Call" : "Audio Call"; 
+        }
         startCallTimer();
       });
       callObj.on('close', endTeamsCall); callObj.on('error', endTeamsCall);
@@ -481,7 +504,6 @@
           if (data.type === 'ping') { lastPingReceived = Date.now(); return; } 
           if (data.type === 'clear') { document.getElementById('messages').innerHTML = ''; }
           else if (data.type === 'req_offline') { setTimeout(flushFriendOutbox, 1000); }
-          else if (data.type === 'incoming_call') { currentCallType = data.callType || 'video'; document.getElementById('ring-title').innerText = "Incoming " + (currentCallType === 'video' ? 'Video' : 'Voice') + " Call"; document.getElementById('ring-overlay').style.display = 'flex'; startInternalRingtone(); }
           else if (data.type === 'end_call') { endTeamsCall(); }
           else if (data.type === 'msg_ack') { updateMessageTicks(data.msgId, data.status); }
           else if (data.type === 'reaction') { applyReaction(data.msgId, data.emoji); }
