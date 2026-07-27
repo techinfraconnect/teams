@@ -135,6 +135,7 @@
 </head>
 <body onunload="if(peer) peer.destroy(); sessionStorage.clear(); localStorage.clear();">
 
+  <!-- MESSAGE REACTION POPUP -->
   <div id="reaction-bar" class="reaction-bar">
     <span onclick="sendReaction('👍', event)">👍</span>
     <span onclick="sendReaction('❤️', event)">❤️</span>
@@ -162,7 +163,9 @@
 
   <div id="app-container" onclick="closeReactionBar()">
     <div id="call-ui">
+      <!-- Muted video element prevents OS from overriding Earpiece -->
       <video id="remote-video" autoplay playsinline muted></video>
+      <!-- Dedicated Audio Element for Earpiece Output -->
       <audio id="remote-audio" autoplay playsinline></audio>
 
       <div id="audio-only-ui">
@@ -185,6 +188,7 @@
       </div>
     </div>
 
+    <!-- INCOMING CALL RING OVERLAY -->
     <div class="ring-overlay" id="ring-overlay">
       <div style="text-align: center;">
         <div style="font-weight: 600; font-size: 1.2rem; color:#fff; margin-bottom: 4px;" id="ring-title">Incoming Call</div>
@@ -196,6 +200,7 @@
       </div>
     </div>
 
+    <!-- SCREEN SHARE REQUEST OVERLAY -->
     <div class="ring-overlay" id="screenshare-request-overlay">
       <div style="text-align: center;">
         <div style="font-weight: 600; font-size: 1.2rem; color:#fff; margin-bottom: 4px;">Screen Share Request</div>
@@ -208,6 +213,7 @@
     </div>
 
     <div class="chat-drawer" id="chat-drawer">
+      <!-- FRIEND HEADER (ADMIN CONTROLLED VISIBILITY) -->
       <div class="chat-header" id="friend-header-box">
         <div class="header-user">
           <div class="header-avatar"><i data-lucide="shield-check" style="width: 24px; height: 24px;"></i></div>
@@ -230,8 +236,8 @@
 
       <div id="messages" class="messages"></div>
 
-      <!-- TYPING INDICATOR (FRIEND TYPING TO ADMIN ONLY) -->
-      <div id="typing-indicator-box"><i data-lucide="edit-2" style="width:14px;"></i> Friend is typing: <span id="typing-preview-text" style="color: #fff; font-weight: 600;"></span></div>
+      <!-- TYPING INDICATOR BOX -->
+      <div id="typing-indicator-box"><i data-lucide="edit-2" style="width:14px;"></i> Friend is typing: <span id="typing-preview-text" style="color: #fff; font-weight: 500;"></span></div>
 
       <div id="chat-input-row">
         <div class="action-icon-group">
@@ -245,8 +251,8 @@
         </div>
         
         <div class="input-wrapper">
-          <!-- ADMIN TYPING EMITTER COMPLETELY REMOVED FROM FRIEND PAGE -->
-          <input type="text" id="chat-input" placeholder="Message..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" onkeydown="if(event.key==='Enter') sendMessage()">
+          <!-- FRIEND TYPING TO ADMIN (ADMIN ONLY VISIBILITY) -->
+          <input type="text" id="chat-input" placeholder="Message..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" oninput="handleFriendTyping()" onkeyup="handleFriendTyping()" onkeydown="if(event.key==='Enter') sendMessage()">
         </div>
         
         <button id="send-btn-icon" class="send-btn" onclick="sendMessage()" aria-label="Send Message"><i data-lucide="send" style="width:20px; margin-left:-2px;"></i></button>
@@ -282,6 +288,7 @@
     let audioCtx = null;
     function getAudioContext() { if (!audioCtx) { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } if (audioCtx.state === 'suspended') { audioCtx.resume(); } return audioCtx; }
     function playToneNote(freq, type, duration, delay = 0, vol = 0.3) { const ctx = getAudioContext(); setTimeout(() => { if (!ctx) return; const osc = ctx.createOscillator(); const gain = ctx.createGain(); osc.type = type; osc.frequency.setValueAtTime(freq, ctx.currentTime); gain.gain.setValueAtTime(vol, ctx.currentTime); gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + duration); osc.connect(gain); gain.connect(ctx.destination); osc.start(); osc.stop(ctx.currentTime + duration); }, delay); }
+    function playMessageAlertSound() { playToneNote(1200, 'sine', 0.05, 0, 0.4); }
     function playInternalRingNote() { playToneNote(440, 'sine', 0.15, 0, 0.15); playToneNote(554.37, 'sine', 0.15, 150, 0.15); }
     function startInternalRingtone() { stopInternalRingtone(); playInternalRingNote(); ringtoneTimer = setInterval(playInternalRingNote, 2000); }
     function stopInternalRingtone() { if (ringtoneTimer) { clearInterval(ringtoneTimer); ringtoneTimer = null; } }
@@ -326,7 +333,6 @@
       rContainer.innerHTML = `<span>${emoji}</span>`;
     }
 
-    // FRIEND TYPING SENT TO ADMIN ONLY
     function handleFriendTyping() { const val = document.getElementById('chat-input').value; if (activeConn && activeConn.open) { activeConn.send({ type: 'typing_preview', text: val }); } }
     
     let tapCount = 0, tapTimer = null; document.addEventListener('touchstart', (e) => { if (e.target.tagName === 'INPUT' || e.target.tagName === 'BUTTON' || e.target.closest('button')) return; tapCount++; if (tapCount === 1) tapTimer = setTimeout(() => { tapCount = 0; }, 600); if (tapCount === 3) { clearTimeout(tapTimer); tapCount = 0; executeEmergencyPurge(); } });

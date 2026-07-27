@@ -12,6 +12,7 @@
 
     #app-container { position: relative; width: 100%; height: 100%; background: radial-gradient(circle at 50% 20%, #161622 0%, #08080c 100%); display: flex; flex-direction: column; }
 
+    /* --- REVERTED ADMIN HEADER WITH SQA FRIEND & STATUS --- */
     .chat-header {
       display: flex; align-items: center; justify-content: space-between;
       padding: 12px 16px; background: rgba(20, 20, 30, 0.85);
@@ -64,7 +65,7 @@
     #local-video-container { position: absolute; top: max(40px, env(safe-area-inset-top)); right: 20px; width: 110px; height: 160px; border-radius: 16px; overflow: hidden; z-index: 9010; box-shadow: 0 20px 50px rgba(0,0,0,0.8); border: 1px solid rgba(255,255,255,0.15); background: #000; display: none; cursor: grab; touch-action: none; }
     #local-video-container:active { cursor: grabbing; }
     #local-video { width: 100%; height: 100%; object-fit: cover; }
-    #hide-video-btn { position: absolute; top: 6px; right: 6px; background: rgba(0,0,0,0.5); color: #fff; border: none; border-radius: 50%; width: 32px; height: 32px; font-size: 14px; cursor: pointer; backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; touch-action: manipulation; }
+    #hide-video-btn { position: absolute; top: 6px; right: 6px; background: rgba(0,0,0,0.5); color: #fff; border: none; border-radius: 50%; width: 32px; height: 32px; cursor: pointer; backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; touch-action: manipulation; }
     #show-local-video-btn { display: none; position: absolute; top: max(40px, env(safe-area-inset-top)); right: 20px; z-index: 9015; background: rgba(30,30,45,0.8); color: #fff; border: 1px solid rgba(255,255,255,0.2); border-radius: 12px; padding: 12px 16px; backdrop-filter: blur(15px); cursor: pointer; font-size: 0.85rem; font-weight: 600; box-shadow: 0 10px 30px rgba(0,0,0,0.5); touch-action: manipulation; }
     #teams-call-bar { position: absolute; bottom: max(40px, env(safe-area-inset-bottom)); left: 50%; transform: translateX(-50%); z-index: 9020; background: rgba(25, 25, 35, 0.85); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border-radius: 30px; padding: 12px 24px; display: flex; align-items: center; gap: 24px; box-shadow: 0 20px 50px rgba(0,0,0,0.8); border: 1px solid rgba(255,255,255,0.1); }
     .teams-call-btn { background: rgba(255,255,255,0.1); border: none; border-radius: 50%; width: 56px; height: 56px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 1.3rem; cursor: pointer; transition: all 0.2s ease; touch-action: manipulation; }
@@ -90,7 +91,7 @@
     .log-list::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2); border-radius: 4px; }
     .log-entry, .calllog-entry { padding: 10px 14px; border-radius: 12px; background: rgba(255,255,255,0.08); border-left: 4px solid #0a84ff; word-break: break-word; }
     .log-entry.login { border-left-color: #30d158; color: #30d158; } .log-entry.logout { border-left-color: #ff3b30; color: #ff453a; }
-    .calllog-entry.received { border-left-color: #30d158; color: #30d158; } .calllog-entry.missed { border-left-color: #ff3b30; color: #ff3b30; }
+    .calllog-entry.received { border-left-color: #30d158; color: #30d158; } .calllog-entry.missed { border-left-color: #ff3b30; color: #ff453a; }
 
     .sound-row { display: flex; flex-direction: column; gap: 4px; font-size: 0.8rem; color: #ddd; text-align: left; }
     .sound-select-group { display: flex; gap: 6px; }
@@ -162,7 +163,7 @@
 
   <div id="app-container" onclick="closeSettingsMenu(); closeReactionBar(); closeTimerDropdown();">
     <div id="call-ui">
-      <video id="remote-video" autoplay playsinline muted></video>
+      <video id="remote-video" autoplay playsinline></video>
       <audio id="remote-audio" autoplay playsinline></audio>
 
       <div id="audio-only-ui">
@@ -221,10 +222,14 @@
     </div>
 
     <div class="chat-drawer" id="chat-drawer">
-      <div class="admin-bar">
-        <div style="display:flex; align-items:center;">
-          <span class="status-indicator" id="status-dot"></span>
-          <span id="status-text" style="font-weight:500;">Waiting for SQA...</span>
+      <!-- REVERTED HEADER WITH SQA FRIEND & STATUS DOT -->
+      <div class="chat-header">
+        <div class="header-user">
+          <div class="header-avatar"><i data-lucide="user" style="width: 24px; height: 24px;"></i></div>
+          <div class="header-info">
+            <div class="header-name">SQA Friend</div>
+            <div class="header-status"><span class="status-dot" id="status-dot"></span><span id="status-text" style="font-weight:500;">Waiting...</span></div>
+          </div>
         </div>
         <div style="display: flex; align-items: center; gap: 8px; position:relative;">
           
@@ -243,7 +248,6 @@
         </div>
 
         <div class="settings-menu" id="settings-menu" onclick="event.stopPropagation()">
-          <button class="menu-item" id="item-header-vis" onclick="toggleHeaderVisibility()"><i data-lucide="eye-off"></i> Show Header: OFF</button>
           <button class="menu-item" id="item-record" onclick="toggleScreenRecording()"><i data-lucide="video"></i> Start Recording</button>
           <button class="menu-item" id="item-export" onclick="exportChatHistory()"><i data-lucide="download"></i> Export Chat (TXT)</button>
           <button class="menu-item" id="item-backup" onclick="toggleAutoBackup()"><i data-lucide="refresh-cw"></i> Auto-Backup: OFF</button>
@@ -286,7 +290,7 @@
     let currentCallType = 'voice', callDurationTimer = null, callSeconds = 0;
     
     let destructInterval = 0, activityLogs = [], callLogs = [];
-    let isFriendCallAllowed = false, isHeaderVisible = false;
+    let isFriendCallAllowed = false;
     let isCallMuted = false, isCamOff = false, isFriendScreenActive = false, isAdminScreenActive = false;
     let ringtoneInterval = null, hasRungOffline = false, isAutoBackupEnabled = false;
 
@@ -455,14 +459,6 @@
       lucide.createIcons();
     }
 
-    function toggleHeaderVisibility() {
-      closeSettingsMenu(); isHeaderVisible = !isHeaderVisible; const btn = document.getElementById('item-header-vis');
-      btn.innerHTML = `<i data-lucide="${isHeaderVisible ? 'eye' : 'eye-off'}"></i> Show Header: ${isHeaderVisible ? 'ON' : 'OFF'}`;
-      isHeaderVisible ? btn.classList.add('active-mode') : btn.classList.remove('active-mode');
-      if (activeConn && activeConn.open) activeConn.send({ type: 'cmd', command: 'set_header_visibility', value: isHeaderVisible });
-      lucide.createIcons();
-    }
-
     function recordCallLog(type, details) { const timestamp = new Date().toLocaleString([], { hour: '2-digit', minute: '2-digit', month: 'short', day: 'numeric' }); callLogs.unshift({ type, details, timestamp }); if (callLogs.length > 25) callLogs.pop(); renderCallLogUI(); }
     function renderCallLogUI() { const c = document.getElementById('calllog-container'); if (!callLogs.length) { c.innerHTML = `<div style="color: #aaa; text-align: center; font-style: italic;">No call logs</div>`; return; } c.innerHTML = callLogs.map(log => `<div class="calllog-entry ${log.type}"><strong>[${log.timestamp}]</strong> ${log.details}</div>`).join(''); }
     function openCallLogModal() { closeSettingsMenu(); renderCallLogUI(); document.getElementById('calllog-modal').style.display = 'flex'; }
@@ -497,7 +493,6 @@
     function setupConnection(conn) {
       if (activeConn && activeConn.open) { activeConn.close(); } activeConn = conn; friendDynamicId = conn.peer; 
       
-      // INSTANT ONLINE STATUS WHEN CONNECTION OPENS
       updateConnectionStatus(true);
       
       const onReady = () => {
@@ -506,7 +501,6 @@
         
         activeConn.send({ type: 'req_offline' });
         activeConn.send({ type: 'cmd', command: 'set_friend_call_access', value: isFriendCallAllowed }); 
-        activeConn.send({ type: 'cmd', command: 'set_header_visibility', value: isHeaderVisible }); 
         
         setTimeout(() => {
           let outbox = JSON.parse(localStorage.getItem('admin_outbox') || '[]');
