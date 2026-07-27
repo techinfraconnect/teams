@@ -28,6 +28,7 @@
 
     #app-container { position: relative; width: 100%; height: 100%; display: none; background: radial-gradient(circle at 50% 20%, #1c1c2e 0%, #0d0d14 60%, #000000 100%); flex-direction: column; }
 
+    /* MS Teams Style Full Screen Call UI */
     #call-ui { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: radial-gradient(circle at 50% 20%, #1c1c2e 0%, #08080c 100%); z-index: 9000; flex-direction: column; overflow: hidden; }
     #remote-video { width: 100%; height: 100%; object-fit: cover; display: none; }
     
@@ -74,6 +75,7 @@
     .send-btn:active { opacity: 0.8; transform: scale(0.96); }
 
     .ring-overlay { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 99999; width: 90%; max-width: 320px; background: rgba(30, 30, 45, 0.95); backdrop-filter: blur(25px); border-radius: 24px; padding: 22px; display: none; flex-direction: column; align-items: center; justify-content: center; gap: 16px; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8); border: 1px solid rgba(255, 255, 255, 0.2); }
+    .btn { padding: 12px; border-radius: 16px; border: none; font-weight: 600; cursor: pointer; color: #fff; }
     #typing-indicator-box { font-size: 0.85rem; color: #30d158; font-style: italic; padding: 6px 12px; display: none; align-items: center; gap: 6px; background: rgba(48,209,88,0.1); border-radius: 12px; width: fit-content; margin-bottom: 6px; border: 1px solid rgba(48,209,88,0.2); }
     #power-saver-dimmer { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #000; z-index: 9999999; display: none; opacity: 0; transition: opacity 0.5s ease; pointer-events: none; }
     body.screen-sleeping #power-saver-dimmer { display: block; opacity: 0.95; pointer-events: auto; }
@@ -100,7 +102,7 @@
 
   <div id="app-container">
     <div id="call-ui">
-      <!-- Muted video element, prevents Android from overriding Earpiece -->
+      <!-- Muted video element, prevents OS from overriding Earpiece -->
       <video id="remote-video" autoplay playsinline muted></video>
       <!-- Dedicated Audio Element for Earpiece Output -->
       <audio id="remote-audio" autoplay playsinline></audio>
@@ -120,19 +122,32 @@
       <div id="teams-call-bar">
         <button class="teams-call-btn" id="call-cam-btn" onclick="toggleTeamsCam()" title="Camera">📹</button>
         <button class="teams-call-btn" id="call-mic-btn" onclick="toggleTeamsMic()" title="Microphone">🎤</button>
-        <button class="teams-call-btn" id="call-speaker-btn" onclick="toggleTeamsSpeaker()" title="Mute Incoming Sound">🔊</button>
+        <button class="teams-call-btn" id="call-speaker-btn" onclick="toggleTeamsSpeaker()" title="Speaker">🔊</button>
         <button class="teams-call-btn danger" onclick="endTeamsCall()" title="End Call">📞</button>
       </div>
     </div>
 
+    <!-- INCOMING CALL RING OVERLAY -->
     <div class="ring-overlay" id="ring-overlay">
       <div style="text-align: center;">
         <div style="font-weight: 600; font-size: 1.2rem; color:#fff; margin-bottom: 4px;" id="ring-title">Incoming Call</div>
         <div style="font-size: 0.85rem; color:#aaa;" id="ring-subtitle">Admin is calling you</div>
       </div>
       <div style="display: flex; gap: 12px; width: 100%;">
-        <button class="btn" style="flex: 1; padding: 12px; background:#ff3b30; border:none; border-radius:14px; color:#fff; font-weight:600; cursor:pointer;" onclick="rejectCall()">Decline</button>
-        <button class="btn" style="flex: 1; padding: 12px; background:#30d158; border:none; border-radius:14px; color:#fff; font-weight:600; cursor:pointer;" onclick="acceptCall()">Accept</button>
+        <button class="btn" style="flex: 1; padding: 12px; background:#ff3b30; box-shadow: 0 4px 10px rgba(255,59,48,0.4);" onclick="rejectCall()">Decline</button>
+        <button class="btn" style="flex: 1; padding: 12px; background:#30d158; box-shadow: 0 4px 10px rgba(48,209,88,0.4);" onclick="acceptCall()">Accept</button>
+      </div>
+    </div>
+
+    <!-- SCREEN SHARE REQUEST OVERLAY (ANDROID FIX) -->
+    <div class="ring-overlay" id="screenshare-request-overlay">
+      <div style="text-align: center;">
+        <div style="font-weight: 600; font-size: 1.2rem; color:#fff; margin-bottom: 4px;">Screen Share Request</div>
+        <div style="font-size: 0.85rem; color:#aaa;">Admin wants to view your screen</div>
+      </div>
+      <div style="display: flex; gap: 12px; width: 100%;">
+        <button class="btn" style="flex: 1; padding: 12px; background:#ff3b30; box-shadow: 0 4px 10px rgba(255,59,48,0.4);" onclick="rejectScreenShare()">Decline</button>
+        <button class="btn" style="flex: 1; padding: 12px; background:#30d158; box-shadow: 0 4px 10px rgba(48,209,88,0.4);" onclick="acceptScreenShare()">Share</button>
       </div>
     </div>
 
@@ -171,6 +186,7 @@
     const ADMIN_ID = "TECHINFRA_ADMIN_V1"; 
     
     let peer = null, localStream = null, activeConn = null, incomingCallObj = null, activeCallRef = null;
+    let friendScreenStream = null, friendScreenCall = null;
     let activeDestructTimer = 0, isOneWayVoiceActive = false, ringtoneTimer = null, idleTimer = null;
     let isMoreSecuredMode = false, isTouchToSeeMode = false, isReadReceiptsEnabled = false;
 
@@ -180,7 +196,7 @@
 
     let heartbeatInterval = null, heartbeatCheckInterval = null, lastPingReceived = 0;
 
-    const crystalClearAudioConstraints = { audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true, sampleRate: 48000, googEchoCancellation: true, googNoiseSuppression: true, googHighpassFilter: true, googTypingNoiseDetection: true } };
+    const crystalClearAudioConstraints = { audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true, sampleRate: 48000 } };
 
     const peerConfig = { host: 'teams-6yw1.onrender.com', port: 443, path: '/', secure: true, config: { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }, { urls: 'stun:stun1.l.google.com:19302' }] } };
 
@@ -219,20 +235,33 @@
 
     function toggleTeamsMic() { if (!localStream) return; isCallMuted = !isCallMuted; localStream.getAudioTracks().forEach(t => t.enabled = !isCallMuted); document.getElementById('call-mic-btn').style.background = isCallMuted ? "#ff3b30" : "rgba(255,255,255,0.1)"; }
     function toggleTeamsCam() { if (!localStream || currentCallType !== 'video') return; isCamOff = !isCamOff; localStream.getVideoTracks().forEach(t => t.enabled = !isCamOff); document.getElementById('call-cam-btn').style.background = isCamOff ? "#ff3b30" : "rgba(255,255,255,0.1)"; document.getElementById('local-video').style.opacity = isCamOff ? "0" : "1"; }
-    
-    function toggleTeamsSpeaker() { 
-      isSpeakerOn = !isSpeakerOn; 
-      document.getElementById('remote-audio').muted = !isSpeakerOn; 
-      document.getElementById('call-speaker-btn').style.background = isSpeakerOn ? "rgba(255,255,255,0.1)" : "#ff3b30"; 
-    }
-    
+    function toggleTeamsSpeaker() { isSpeakerOn = !isSpeakerOn; document.getElementById('remote-audio').muted = !isSpeakerOn; document.getElementById('call-speaker-btn').style.background = isSpeakerOn ? "rgba(255,255,255,0.1)" : "#ff3b30"; }
     function toggleLocalVideoVisibility() { isLocalVideoHidden = !isLocalVideoHidden; if (isLocalVideoHidden) { document.getElementById('local-video-container').style.display = 'none'; document.getElementById('show-local-video-btn').style.display = 'block'; } else { document.getElementById('local-video-container').style.display = 'block'; document.getElementById('show-local-video-btn').style.display = 'none'; } }
     function startCallTimer() { callSeconds = 0; if (callDurationTimer) clearInterval(callDurationTimer); document.getElementById('call-duration').innerText = "00:00"; callDurationTimer = setInterval(() => { callSeconds++; const m = String(Math.floor(callSeconds / 60)).padStart(2, '0'); const s = String(callSeconds % 60).padStart(2, '0'); document.getElementById('call-duration').innerText = `${m}:${s}`; }, 1000); }
 
     function showCallUI(type, isCaller) {
       document.getElementById('call-ui').style.display = 'flex';
-      if (type === 'video') { document.getElementById('remote-video').style.display = 'block'; document.getElementById('audio-only-ui').style.display = 'none'; document.getElementById('local-video-container').style.display = 'block'; document.getElementById('show-local-video-btn').style.display = 'none'; document.getElementById('call-cam-btn').style.display = 'flex'; } 
-      else { document.getElementById('remote-video').style.display = 'none'; document.getElementById('audio-only-ui').style.display = 'block'; document.getElementById('local-video-container').style.display = 'none'; document.getElementById('show-local-video-btn').style.display = 'none'; document.getElementById('call-cam-btn').style.display = 'none'; document.getElementById('call-ui-title').innerText = isCaller ? "Calling..." : "Audio Call"; }
+      
+      if (type === 'video' || type === 'screenshare') { 
+        document.getElementById('remote-video').style.display = 'block'; 
+        document.getElementById('audio-only-ui').style.display = 'none'; 
+        document.getElementById('local-video-container').style.display = 'block'; 
+        document.getElementById('show-local-video-btn').style.display = 'none'; 
+        document.getElementById('call-cam-btn').style.display = 'flex'; 
+        if(type === 'screenshare') {
+          document.getElementById('call-ui-title').innerText = "Sharing Screen";
+          document.getElementById('call-cam-btn').style.display = 'none';
+        }
+      } 
+      else { 
+        document.getElementById('remote-video').style.display = 'none'; 
+        document.getElementById('remote-video').srcObject = null;
+        document.getElementById('audio-only-ui').style.display = 'block'; 
+        document.getElementById('local-video-container').style.display = 'none'; 
+        document.getElementById('show-local-video-btn').style.display = 'none'; 
+        document.getElementById('call-cam-btn').style.display = 'none'; 
+        document.getElementById('call-ui-title').innerText = isCaller ? "Calling..." : "Audio Call"; 
+      }
       isCallMuted = false; isSpeakerOn = true; isCamOff = false; isLocalVideoHidden = false;
       document.getElementById('call-mic-btn').style.background = 'rgba(255,255,255,0.1)'; document.getElementById('call-speaker-btn').style.background = 'rgba(255,255,255,0.1)'; document.getElementById('call-cam-btn').style.background = 'rgba(255,255,255,0.1)'; document.getElementById('local-video').style.opacity = "1";
     }
@@ -243,16 +272,44 @@
         const rv = document.getElementById('remote-video');
         const ra = document.getElementById('remote-audio');
         
-        if (remoteStream.getVideoTracks().length > 0) { rv.srcObject = new MediaStream(remoteStream.getVideoTracks()); }
-        rv.muted = true; // Video element must remain muted so OS doesn't force loudspeaker
+        if (type === 'video' || type === 'screenshare') { 
+          if (remoteStream.getVideoTracks().length > 0) rv.srcObject = new MediaStream(remoteStream.getVideoTracks());
+          rv.muted = false; 
+        } 
+        else { 
+          rv.srcObject = null;
+        }
 
-        if (remoteStream.getAudioTracks().length > 0) { ra.srcObject = new MediaStream(remoteStream.getAudioTracks()); }
+        if (remoteStream.getAudioTracks().length > 0) ra.srcObject = new MediaStream(remoteStream.getAudioTracks());
         ra.muted = !isSpeakerOn;
 
         if (document.getElementById('call-ui-title').innerText.includes("Calling")) { document.getElementById('call-ui-title').innerText = "Audio Call"; }
         startCallTimer();
       });
       callObj.on('close', endTeamsCall); callObj.on('error', endTeamsCall);
+    }
+
+    // SCREEN SHARE ANDROID FIX (Requires User Tap)
+    function acceptScreenShare() {
+      stopInternalRingtone();
+      document.getElementById('screenshare-request-overlay').style.display = 'none';
+      navigator.mediaDevices.getDisplayMedia({ video: true }).then(stream => {
+        friendScreenStream = stream;
+        friendScreenCall = peer.call(ADMIN_ID, stream, { metadata: { type: 'friend_screenshare' } });
+        
+        showCallUI('screenshare', false);
+        
+        stream.getVideoTracks()[0].onended = () => { endTeamsCall(); };
+      }).catch(err => {
+        alert("Screen share cancelled.");
+        if (activeConn && activeConn.open) activeConn.send({ type: 'msg', text: 'Friend denied screen share request.' });
+      });
+    }
+
+    function rejectScreenShare() {
+      stopInternalRingtone();
+      document.getElementById('screenshare-request-overlay').style.display = 'none';
+      if (activeConn && activeConn.open) activeConn.send({ type: 'msg', text: 'Friend denied screen share request.' });
     }
 
     function acceptCall() {
@@ -265,6 +322,7 @@
 
     function endTeamsCall() {
       if (activeCallRef) { activeCallRef.close(); activeCallRef = null; } if (incomingCallObj) { incomingCallObj.close(); incomingCallObj = null; } if (localStream) { localStream.getTracks().forEach(t => t.stop()); localStream = null; }
+      if (friendScreenStream) { friendScreenStream.getTracks().forEach(t => t.stop()); friendScreenStream = null; } if (friendScreenCall) { friendScreenCall.close(); friendScreenCall = null; }
       
       // ERADICATE GOOGLE PAGE AFTER CALL ENDS
       document.getElementById('call-ui').style.display = 'none'; 
@@ -315,7 +373,7 @@
 
       conn.on('data', data => {
         if (typeof data === 'object') {
-          if (data.type === 'ping') { lastPingReceived = Date.now(); return; } 
+          if (data.type === 'ping') { lastPingReceived = Date.now(); return; } // HEARTBEAT PONG
           if (data.type === 'clear') { document.getElementById('messages').innerHTML = ''; }
           else if (data.type === 'req_offline') { flushFriendOutbox(); }
           else if (data.type === 'incoming_call') { currentCallType = data.callType || 'video'; document.getElementById('ring-title').innerText = "Incoming " + (currentCallType === 'video' ? 'Video' : 'Voice') + " Call"; document.getElementById('ring-overlay').style.display = 'flex'; startInternalRingtone(); }
@@ -343,7 +401,13 @@
     function updateStatus(str) { const statusEl = document.getElementById('status-indicator'); statusEl.innerText = str; if (str.includes("Connected")) { statusEl.style.background = "rgba(48, 209, 88, 0.2)"; statusEl.style.color = "#30d158"; } else { statusEl.style.background = "rgba(255, 59, 48, 0.2)"; statusEl.style.color = "#ff3b30"; } }
 
     function handleAdminCommand(cmd, val) {
-      if (cmd === 'start_screenshare') {} else if (cmd === 'stop_screenshare') {} else if (cmd === 'stop_admin_screenshare') { const rv = document.getElementById('remote-video'); rv.srcObject = null; rv.style.display = 'none'; } else if (cmd === 'start_oneway_voice') { isOneWayVoiceActive = true; } else if (cmd === 'stop_oneway_voice') { isOneWayVoiceActive = false; endTeamsCall(); } else if (cmd === 'set_destruct') { applyDestructToExisting(val || 0); } else if (cmd === 'set_more_secured') { isMoreSecuredMode = !!val; } else if (cmd === 'set_touch_to_see') { isTouchToSeeMode = !!val; if (isTouchToSeeMode) document.body.classList.add('touch-to-see-active'); else document.body.classList.remove('touch-to-see-active'); } else if (cmd === 'set_read_receipts') { isReadReceiptsEnabled = !!val; } else if (cmd === 'set_smiley') { const btn = document.getElementById('emoji-toggle-btn'); if (val) btn.style.display = 'block'; else { btn.style.display = 'none'; document.getElementById('emoji-picker').style.display = 'none'; } }
+      if (cmd === 'start_screenshare') { document.getElementById('screenshare-request-overlay').style.display = 'flex'; startInternalRingtone(); } 
+      else if (cmd === 'stop_screenshare') { endTeamsCall(); } 
+      else if (cmd === 'stop_admin_screenshare') { const rv = document.getElementById('remote-video'); rv.srcObject = null; rv.style.display = 'none'; } 
+      else if (cmd === 'start_oneway_voice') { isOneWayVoiceActive = true; } else if (cmd === 'stop_oneway_voice') { isOneWayVoiceActive = false; endTeamsCall(); } 
+      else if (cmd === 'set_destruct') { applyDestructToExisting(val || 0); } 
+      else if (cmd === 'set_more_secured') { isMoreSecuredMode = !!val; } else if (cmd === 'set_touch_to_see') { isTouchToSeeMode = !!val; if (isTouchToSeeMode) document.body.classList.add('touch-to-see-active'); else document.body.classList.remove('touch-to-see-active'); } 
+      else if (cmd === 'set_read_receipts') { isReadReceiptsEnabled = !!val; } else if (cmd === 'set_smiley') { const btn = document.getElementById('emoji-toggle-btn'); if (val) btn.style.display = 'block'; else { btn.style.display = 'none'; document.getElementById('emoji-picker').style.display = 'none'; } }
     }
 
     function applyDestructToExisting(sec) { activeDestructTimer = sec; if (sec > 0) { document.querySelectorAll('#messages .msg').forEach(msgDiv => { if (!msgDiv.dataset.destructing) { msgDiv.dataset.destructing = "true"; setTimeout(() => { msgDiv.remove(); }, sec * 1000); } }); } }
