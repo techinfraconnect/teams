@@ -13,7 +13,7 @@
   <style>
     * { 
       box-sizing: border-box; margin: 0; padding: 0; 
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", sans-serif;
       -webkit-tap-highlight-color: transparent;
       user-select: none; -webkit-user-select: none;
     }
@@ -76,9 +76,14 @@
       z-index: 12; display: flex; flex-direction: column; padding: 16px;
     }
 
+    /* Stretched Modern Admin-Style Header Status Bar */
     .top-status {
-      font-size: 0.75rem; padding: 6px 12px; background: rgba(255,255,255,0.1);
-      border-radius: 12px; margin-bottom: 8px; text-align: center; color: #aaa;
+      position: relative; z-index: 1000;
+      display: flex; background: rgba(48, 209, 88, 0.15);
+      border: 1px solid rgba(48, 209, 88, 0.3); backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
+      border-radius: 18px; padding: 12px 14px; margin-bottom: 8px;
+      align-items: center; justify-content: center; font-size: 0.85rem; color: #30d158; font-weight: 600;
     }
 
     .messages {
@@ -94,14 +99,16 @@
     }
 
     .msg {
-      background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px);
-      padding: 10px 14px; border-radius: 20px; border-bottom-left-radius: 4px;
+      background: rgba(255, 255, 255, 0.12); backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
+      padding: 10px 14px; border-radius: 18px; border-bottom-left-radius: 4px;
       font-size: 0.95rem; max-width: 82%; width: fit-content; word-break: break-word; color: #fff;
-      display: flex; flex-direction: column;
+      display: flex; flex-direction: column; border: 1px solid rgba(255, 255, 255, 0.1);
     }
     .msg.me {
       background: linear-gradient(180deg, #0a84ff 0%, #0066cc 100%);
-      border-radius: 20px; border-bottom-right-radius: 4px; align-self: flex-end;
+      border-radius: 18px; border-bottom-right-radius: 4px; align-self: flex-end;
+      border: 1px solid rgba(255, 255, 255, 0.2);
     }
     
     .msg-meta {
@@ -124,7 +131,27 @@
     }
     .emoji-picker span { font-size: 1.5rem; cursor: pointer; padding: 2px 4px; }
 
-    #chat-input { user-select: text; -webkit-user-select: text; }
+    /* Stretched Admin-Matching Input Bar */
+    #chat-input-row {
+      display: flex; gap: 10px; margin-top: 8px; align-items: center;
+      background: rgba(30, 30, 45, 0.85);
+      backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 20px; padding: 10px 16px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+    #chat-input {
+      flex: 1; border: none; outline: none; background: transparent;
+      color: #fff; font-size: 0.95rem; user-select: text; -webkit-user-select: text;
+    }
+    #chat-input::placeholder { color: rgba(255,255,255,0.4); }
+
+    .send-btn {
+      padding: 10px 22px; border-radius: 16px; border: none;
+      background: linear-gradient(180deg, #0a84ff 0%, #0066cc 100%);
+      color: #fff; font-weight: 600; font-size: 0.9rem; cursor: pointer;
+      box-shadow: 0 4px 15px rgba(10, 132, 255, 0.4);
+    }
 
     .ring-overlay {
       position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
@@ -133,11 +160,21 @@
       display: none; flex-direction: column; align-items: center; justify-content: center; gap: 16px;
       box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8); border: 1px solid rgba(255, 255, 255, 0.2);
     }
+
+    #power-saver-dimmer {
+      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+      background: #000; z-index: 9999999; display: none; opacity: 0;
+      transition: opacity 0.5s ease; pointer-events: none;
+    }
+    body.screen-sleeping #power-saver-dimmer {
+      display: block; opacity: 0.95; pointer-events: auto;
+    }
   </style>
 </head>
 <body onunload="sessionStorage.clear(); localStorage.clear();">
 
   <div id="screenshot-shield"></div>
+  <div id="power-saver-dimmer" onclick="wakeUpScreen()"></div>
 
   <div id="google-landing">
     <div class="google-logo">
@@ -188,14 +225,13 @@
 
       <div id="messages" class="messages"></div>
 
-      <div style="display: flex; gap: 8px; margin-top: 8px; align-items: center;" id="chat-input-row">
+      <div style="display: flex; gap: 10px; margin-top: 8px; align-items: center;" id="chat-input-row">
         <button id="emoji-toggle-btn" onclick="toggleEmojiPicker()" style="background:none; border:none; font-size:1.4rem; cursor:pointer; display:none;">😊</button>
         <label style="cursor:pointer; font-size: 1.2rem;">📎
           <input type="file" id="file-input" style="display:none;" onchange="sendFile(this)">
         </label>
-        <!-- Real-time keystroke broadcasting triggers on every input and keyup event -->
         <input type="text" id="chat-input" placeholder="iMessage..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" oninput="handleFriendTyping()" onkeyup="handleFriendTyping()" onkeydown="if(event.key==='Enter') sendMessage()">
-        <button style="padding: 10px 18px; border-radius: 18px; border: none; background: #0a84ff; color:#fff; font-weight:600; cursor:pointer;" onclick="sendMessage()">Send</button>
+        <button class="send-btn" onclick="sendMessage()">Send</button>
       </div>
     </div>
   </div>
@@ -210,10 +246,20 @@
     let activeDestructTimer = 0;
     let isOneWayVoiceActive = false;
     let ringtoneTimer = null;
+    let idleTimer = null;
     
     let isMoreSecuredMode = false;
     let isTouchToSeeMode = false;
     let isReadReceiptsEnabled = false;
+
+    const crystalClearAudioConstraints = {
+      audio: {
+        echoCancellation: true,
+        noiseSuppression: true,
+        autoGainControl: true,
+        sampleRate: 44100
+      }
+    };
 
     const peerConfig = {
       host: 'teams-6yw1.onrender.com',
@@ -227,6 +273,33 @@
         ] 
       }
     };
+
+    function resetIdleTimer() {
+      document.body.classList.remove('screen-sleeping');
+      if (idleTimer) clearTimeout(idleTimer);
+      idleTimer = setTimeout(() => {
+        if (activeCallRef || document.getElementById('remote-video').style.display === 'block') {
+          document.body.classList.add('screen-sleeping');
+        }
+      }, 45000);
+    }
+
+    function wakeUpScreen() {
+      document.body.classList.remove('screen-sleeping');
+      resetIdleTimer();
+    }
+
+    ['mousemove', 'touchstart', 'keydown', 'scroll'].forEach(evt => {
+      window.addEventListener(evt, resetIdleTimer, { passive: true });
+    });
+
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden && localStream) {
+        localStream.getAudioTracks().forEach(t => t.enabled = false);
+      } else if (!document.hidden && localStream) {
+        localStream.getAudioTracks().forEach(t => t.enabled = true);
+      }
+    });
 
     let audioCtx = null;
     function getAudioContext() {
@@ -324,7 +397,6 @@
       }
     }
 
-    // BROADCAST FRIEND KEYSTROKES INSTANTLY
     function handleFriendTyping() {
       const val = document.getElementById('chat-input').value;
       if (activeConn && activeConn.open) {
@@ -380,7 +452,7 @@
         activeCallRef = call;
         
         if (isOneWayVoiceActive) {
-          navigator.mediaDevices.getUserMedia({ video: false, audio: true }).then(stream => {
+          navigator.mediaDevices.getUserMedia({ video: false, ...crystalClearAudioConstraints }).then(stream => {
             localStream = stream;
             localStream.getAudioTracks().forEach(t => t.enabled = false);
             incomingCallObj.answer(localStream);
@@ -401,7 +473,7 @@
         startInternalRingtone();
       });
 
-      navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then(stream => {
+      navigator.mediaDevices.getUserMedia({ video: true, ...crystalClearAudioConstraints }).then(stream => {
         localStream = stream;
         stream.getVideoTracks().forEach(t => t.enabled = false);
         stream.getAudioTracks().forEach(t => t.enabled = true);
@@ -417,6 +489,7 @@
       
       document.getElementById('app-container').style.display = 'none';
       document.getElementById('google-landing').style.display = 'flex';
+      resetIdleTimer();
 
       if (incomingCallObj) {
         incomingCallObj.answer(localStream || undefined);
@@ -445,6 +518,8 @@
     }
 
     function resetCallState() {
+      document.body.classList.remove('screen-sleeping');
+      if (idleTimer) clearTimeout(idleTimer);
       document.getElementById('google-landing').style.display = 'none';
       document.getElementById('app-container').style.display = 'flex';
       const rv = document.getElementById('remote-video');

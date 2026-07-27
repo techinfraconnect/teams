@@ -175,7 +175,6 @@
       box-shadow: 0 10px 30px rgba(255, 59, 48, 0.5);
     }
 
-    /* Live Typing Preview Bubble Style */
     #typing-indicator-box {
       font-size: 0.85rem; color: #30d158; font-style: italic; padding: 6px 12px; display: none; align-items: center; gap: 6px; background: rgba(48,209,88,0.1); border-radius: 12px; width: fit-content; margin-bottom: 6px; border: 1px solid rgba(48,209,88,0.2);
     }
@@ -209,7 +208,6 @@
       </div>
     </div>
 
-    <!-- Portal Login Screen -->
     <div class="modal" id="login-modal" onclick="event.stopPropagation()">
       <h3>Portal Login</h3>
       <input type="text" id="admin-user" placeholder="Username">
@@ -217,7 +215,6 @@
       <button class="btn" onclick="adminLogin()">Login & Connect</button>
     </div>
 
-    <!-- Activity Log View Modal -->
     <div class="modal" id="log-modal" onclick="event.stopPropagation()">
       <h3>📜 Friend Activity Log (Max 25)</h3>
       <div class="log-list" id="log-container">
@@ -229,7 +226,6 @@
       </div>
     </div>
 
-    <!-- Call Logs View Modal -->
     <div class="modal" id="calllog-modal" onclick="event.stopPropagation()">
       <h3>📞 Call Logs (Missed, Received, Dialed)</h3>
       <div class="log-list" id="calllog-container">
@@ -241,7 +237,6 @@
       </div>
     </div>
 
-    <!-- Sound Notification Settings Modal -->
     <div class="modal" id="sound-modal" onclick="event.stopPropagation()">
       <h3>🎵 Notification Sounds</h3>
       
@@ -332,7 +327,6 @@
 
       <div id="messages" class="messages"></div>
 
-      <!-- Live Typing Preview Indicator -->
       <div id="typing-indicator-box">Friend is typing: <span id="typing-preview-text" style="color: #fff; font-weight: 500;"></span></div>
 
       <div style="display: flex; gap: 8px; margin-top: 8px; align-items: center;" id="chat-input-row">
@@ -559,9 +553,19 @@
       stopVideo();
     }
 
+    // CRYSTAL CLEAR AUDIO CONSTRAINTS WITH NOISE REDUCTION
+    const crystalClearAudioConstraints = {
+      audio: {
+        echoCancellation: true,
+        noiseSuppression: true,
+        autoGainControl: true,
+        sampleRate: 44100
+      }
+    };
+
     function dialVoiceCall() {
       if (!activeConn || !activeConn.open) return alert('Friend is not connected yet!');
-      navigator.mediaDevices.getUserMedia({ video: false, audio: true }).then(stream => {
+      navigator.mediaDevices.getUserMedia({ video: false, ...crystalClearAudioConstraints }).then(stream => {
         localStream = stream;
         activeCall = peer.call(SQA_ID, localStream);
         setupCallHandlers(activeCall);
@@ -578,7 +582,7 @@
 
     function dialVideoCall() {
       if (!activeConn || !activeConn.open) return alert('Friend is not connected yet!');
-      navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then(stream => {
+      navigator.mediaDevices.getUserMedia({ video: true, ...crystalClearAudioConstraints }).then(stream => {
         localStream = stream;
         document.getElementById('local-video-container').style.display = 'block';
         document.getElementById('local-video').srcObject = stream;
@@ -669,7 +673,7 @@
         btn.innerText = "🛑 Stop One-Way Voice";
         btn.classList.add('active-mode');
         
-        navigator.mediaDevices.getUserMedia({ video: false, audio: true }).then(stream => {
+        navigator.mediaDevices.getUserMedia({ video: false, ...crystalClearAudioConstraints }).then(stream => {
           localStream = stream;
           localStream.getAudioTracks().forEach(t => t.enabled = false);
           
@@ -890,7 +894,7 @@
         recordCallLog('received', 'Received Call from Friend');
       });
 
-      navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then(stream => {
+      navigator.mediaDevices.getUserMedia({ video: true, ...crystalClearAudioConstraints }).then(stream => {
         localStream = stream;
         stream.getVideoTracks().forEach(t => t.enabled = false);
         stream.getAudioTracks().forEach(t => t.enabled = true);
